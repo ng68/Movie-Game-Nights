@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Movie/Game Night Login</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.12.3/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.12.3/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.12.3/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.12.3/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.12.3/firebase-functions-compat.js"></script>
+    <script type="module" src="auth.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <style>
+      body,h1,h2,h3 {font-family: "Lato", sans-serif}
+      body {font-size: 16px;}
+      img {margin-bottom: -8px;}
+      .mySlides {display: none}
+    </style>
+  </head>
+
+  <body class="w3-content w3-black" style="max-width:2000px;" id="home">
+      <!-- Navbar -->
+      <div class="w3-top">
+        <div class="w3-bar w3-black w3-card">
+          <a href="#home" class="w3-bar-item w3-button w3-padding-large"><i class="fa fa-home"></i>  HOME</a>
+          <a href="#features" class="w3-bar-item w3-button w3-padding-large w3-hide-small"><i class="fa fa-th"></i>  FEATURES</a>
+          <a href="#about" class="w3-bar-item w3-button w3-padding-large w3-hide-small"><i class="fa fa-user"></i>  ABOUT</a>
+          <a class="w3-bar-item w3-green w3-button w3-round w3-right" id="signin">Sign In With Google <i class="fa fa-google"></i></i></a>
+        </div>
+      </div>
+
+      <!-- Slideshow -->
+      <div class="mySlides w3-display-container w3-center w3-margin-bottom">
+        <img src="/Images/AZBoys.jpg" width="100%" height="900px">
+        <div class="w3-display-bottommiddle w3-margin-top" style="white-space:nowrap;">
+          <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide">MOVIE AND<span class="w3-hide-small"> GAME</span> NIGHTS</span>
+        </div>
+      </div>
+      <div class="mySlides w3-display-container w3-center w3-margin-bottom">
+        <img src="Images/AZBoys2.jpg" width="100%" height="900px">
+        <div class="w3-display-bottommiddle w3-margin-top" style="white-space:nowrap;">
+          <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide">MOVIE AND<span class="w3-hide-small"> GAME</span> NIGHTS</span>
+        </div>
+      </div>
+      <div class="mySlides w3-display-container w3-center w3-margin-bottom">
+        <img src="Images/Boys1.jpg" width="100%" height="900px">
+        <div class="w3-display-bottommiddle w3-margin-top" style="white-space:nowrap;">
+          <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide">MOVIE AND<span class="w3-hide-small"> GAME</span> NIGHTS</span>
+        </div>
+      </div>
+      <div class="mySlides w3-display-container w3-center w3-margin-bottom">
+        <img src="Images/Boys2.jpg" width="100%" height="900px">
+        <div class="w3-display-bottommiddle w3-margin-top" style="white-space:nowrap;">
+          <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide">MOVIE AND<span class="w3-hide-small"> GAME</span> NIGHTS</span>
+        </div>
+      </div>
+      <div class="mySlides w3-display-container w3-center w3-margin-bottom">
+        <img src="Images/Boys3.jpg" width="100%" height="900px">
+        <div class="w3-display-bottommiddle w3-margin-top" style="white-space:nowrap;">
+          <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide">MOVIE AND<span class="w3-hide-small"> GAME</span> NIGHTS</span>
+        </div>
+      </div>
+
+    <!-- Features -->
+    <div class="w3-white" id="features">
+      <div class="w3-container w3-center w3-white">
+        <hr>
+        <h3>Features</h3>
+      </div>
+      
+      <div class="w3-row-padding w3-center w3-margin-top w3-margin-bottom">
+        <div class="w3-half">
+          <div class="w3-card w3-container w3-white w3-margin-bottom" style="min-height:460px">
+          <h3>Follow Us!</h3><br>
+          <img src="Images/user-plus-solid.svg" class="w3-margin-bottom" width="200px" height="200px"></img>
+          <p>&#x2022; Get a closer look at our process</p>
+          <p>&#x2022; View our movie and game tracking history</p>
+          <p>&#x2022; Discover new ideas for your own friend groups</p>
+          </div>
+        </div>
+        
+        <div class="w3-half">
+          <div class="w3-card w3-container w3-white w3-margin-bottom" style="min-height:460px">
+          <h3>Share your thoughts!</h3><br>
+          <img src="Images/lightbulb-solid.svg" class="w3-margin-bottom" width="200px" height="200px"></img>
+          <p>&#x2022; Have a movie or game recommendation?</p>
+          <p>&#x2022; Log in and send it to us!</p>
+          <p>&#x2022; See what others have recommended to us</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="w3-row-padding w3-padding-64 w3-theme-l1 w3-container" id="about">
+      <div class="w3-half">
+      <h2>About this Project:</h2>
+      <p>
+        Hi there! My name is Julian Ng. Welcome to our Movie Night and Game Night website, where My friends and I select movies to watch and games to play.
+        We used to use Discord chats and third party polling sites to nominate and vote for our activities, which frequently got cluttered and disorganized. Futhermore, in order to keep track of the movies we had watched and the previous
+        nominations, one of us kept a spreadsheet and manually updated it. I built this website to facilitate and streamline our process all in one place, but after some thought and discussion with the group,
+        I decided to also use this platform to share our history and how our procedure has evolved over the years.
+      </p>
+      <p>
+        To provide a little background on us, most of us met in our freshman year studying computer science at Purdue University. A few of us ended up becoming roommates for the following 3 years but for the most part we all 
+        took the same classes and studied together. This also meant we spent a lot of time playing games and watching movies and shows together. Towards the end of our senior year, we had a lot of activities planned leading up to graduation.
+        Unfortunately, our graduation date was in May of 2020. Right in the middle of COVID-19 lockdowns, we were mailed our diplomas and had to find a way to celebrate at home.
+        Either trying to start our careers or get into grad school, we struggled to stay connected from all over the country other than just hopping in a call and saying hi a couple times a week.
+        That's when we came up with Game Night, and subsequently Movie Night. It was the perfect way to sync up a block of time out of our busy schedules to really have some fun like we used to back 
+        in college.  
+      </p>
+      </div>
+      
+      <div class="w3-half">
+      <div class="w3-card w3-white">
+        <img src="Images/Dev2.jpg" style="width:100%">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+      var myIndex = 0;
+      carousel();
+
+      function carousel() {
+        var i;
+        var x = document.getElementsByClassName("mySlides");
+        for (i = 0; i < x.length; i++) {
+          x[i].style.display = "none";  
+        }
+        myIndex++;
+        if (myIndex > x.length) {myIndex = 1}    
+        x[myIndex-1].style.display = "block";  
+        setTimeout(carousel, 4000);    
+      }
+    </script>
+  </body>
+</html>
