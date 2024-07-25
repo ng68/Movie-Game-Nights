@@ -13,11 +13,19 @@ gamesbtn.addEventListener('click', e=> {
 })
 
 const activityType = document.getElementById("activityType")
-const submitBtn = docume.getElementById("submitbtn")
+const submitBtn = document.getElementById("submitbtn")
 activityType.addEventListener('change', e => {
     submitBtn.disabled = false
 })
 
 submitBtn.addEventListener('click', e => {
-    window.location.href = "success.html"
+    const name = document.getElementById("name")
+    const recommendation = document.getElementById("recommendation")
+    const message = document.getElementById("message")
+    if (name.value == '' || recommendation.value == '' || message.value == '') {
+        alert("Please fill out all fields before submitting")
+    }
+    else {
+        window.location.href = "success.html"
+    }
 })

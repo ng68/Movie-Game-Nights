@@ -35,35 +35,20 @@
         <div class="w3-bar w3-black w3-card">
           <a class="w3-bar-item w3-button w3-padding-large" id="homebtn"><i class="fa fa-home"></i> HOME</a>
           <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="moviesbtn"><i class="fa fa-film"></i> MOVIES</a>
+          <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="gamesbtn"><i class="fa fa-gamepad"></i> GAMES</a>
           <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="recommendbtn"><i class="fa fa-thumb-tack"></i></i> RECOMMENDATIONS</a>
         </div>
       </div> 
     
-      <div class="w3-container w3-content" style="max-width:1500px;margin-top:80px">    
-        <!-- The Grid -->
-        <div class="w3-row">
-    
-          <!-- Middle Column -->
-          <div class="w3-col m7">
-            <div class="w3-row-padding" id="polldiv">
-              <div class="w3-col m12">
-                <div class="w3-card w3-round w3-white">
-                  <div class="w3-container w3-padding w3-center" id="activepoll">
-                    <h1>Thanks for your Recommendation!</h1>
-                    <hr>
-                    <h3>Your recommendation has been successfully submitted! If you go back to the homepage you should hopefully see it in our recommendations list and we will review it as a group.</h3>
-                  </div>
-                </div>
-              </div>
+      <div class="w3-container w3-content" style="max-width:1500px;margin-top:80px"> 
+        <div class="w3-card w3-round w3-white">
+            <div class="w3-container w3-padding w3-center" id="activepoll">
+            <h1>Thanks for your Recommendation!</h1>
+            <hr>
+            <h3>Your recommendation has been successfully submitted! If you go back to the homepage you should hopefully see it in our recommendations list and we will review it as a group.</h3>
             </div>
-            <br>
-            
-          <!-- End Middle Column -->
-          </div>
-          
-        <!-- End Grid -->
         </div>
-        
+        <br>
       <!-- End Page Container -->
       </div>
 
@@ -71,6 +56,7 @@
     <script>
         const homebtn = document.getElementById("homebtn")
         const moviesbtn = document.getElementById("moviesbtn")
+        const gamesbtn = document.getElementById("gamesbtn")
         const recommendbtn = document.getElementById("recommendbtn")
 
         homebtn.addEventListener('click', e=> { 
@@ -78,6 +64,9 @@
         })
         moviesbtn.addEventListener('click', e=> { 
             window.location.href = "../Movies/movies.html"
+        })
+        gamesbtn.addEventListener('click', e=> { 
+            window.location.href = "../Games/games.html"
         })
         recommendbtn.addEventListener('click', e=> { 
             window.location.href = "../Recommend/recommend.html"
