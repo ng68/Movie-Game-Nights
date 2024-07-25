@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Recommendations</title>
+    <title>Game Night</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
@@ -15,7 +15,7 @@
     <script defer src="/__/firebase/10.12.3/firebase-database-compat.js"></script>
     <script defer src="/__/firebase/10.12.3/firebase-firestore-compat.js"></script>
     <script defer src="/__/firebase/10.12.3/firebase-functions-compat.js"></script>
-    <script type="module" src="recommend.js"></script>
+    <script type="module" src="games.js"></script>
     <!-- 
       initialize the SDK after all desired features are loaded, set useEmulator to false
       to avoid connecting the SDK to running emulators.
@@ -35,10 +35,10 @@
         <div class="w3-bar w3-black w3-card">
           <a class="w3-bar-item w3-button w3-padding-large" id="homebtn"><i class="fa fa-home"></i> HOME</a>
           <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="moviesbtn"><i class="fa fa-film"></i> MOVIES</a>
-          <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="gamesbtn"><i class="fa fa-gamepad"></i> GAMES</a>
+          <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="recommendbtn"><i class="fa fa-thumb-tack"></i></i> RECOMMENDATIONS</a>
         </div>
       </div> 
-      
+    
       <div class="w3-container w3-content" style="max-width:1500px;margin-top:80px">    
         <!-- The Grid -->
         <div class="w3-row">
@@ -49,26 +49,9 @@
               <div class="w3-col m12">
                 <div class="w3-card w3-round w3-white">
                   <div class="w3-container w3-padding w3-center" id="activepoll">
-                    <h1>Send a Recommendation!</h1>
+                    <h1>Thanks for your Recommendation!</h1>
                     <hr>
-                    <p><label>Activity type</label></p>
-                    <select id="activityType" class="w3-select w3-border" name="Type">
-                      <option value="" disabled selected>Select Activity</option>
-                      <option value="movie">Movie</option>
-                      <option value="game">Game</option>
-                    </select>
-                    <br>
-                    <label><b>Your Name (Can just be First Name)</b></label>
-                    <input class="w3-input w3-border" type="text" id="name" required>
-                    <br>
-                    <label><b>Recommendation</b></label>
-                    <br>
-                    <input class="w3-input w3-border" type="text" id="recommendation" required>
-                    <br>
-                    <label><b>Message (Why are you recommending this?)</b></label>
-                    <input class="w3-input w3-border" type="text" id="name" required>
-                    <br>
-                    <button id="submitbtn" class="w3-button w3-indigo w3-hover-blue w3-center" disabled>Submit Recommendation</button>
+                    <h3>Your recommendation has been successfully submitted! If you go back to the homepage you should hopefully see it in our recommendations list and we will review it as a group.</h3>
                   </div>
                 </div>
               </div>
@@ -83,7 +66,22 @@
         
       <!-- End Page Container -->
       </div>
+
     <!-- Scripts -->
-    <script type="module" src="recommend.js"></script>
+    <script>
+        const homebtn = document.getElementById("homebtn")
+        const moviesbtn = document.getElementById("moviesbtn")
+        const recommendbtn = document.getElementById("recommendbtn")
+
+        homebtn.addEventListener('click', e=> { 
+                window.location.href = "../Home/home.html"
+        })
+        moviesbtn.addEventListener('click', e=> { 
+            window.location.href = "../Movies/movies.html"
+        })
+        recommendbtn.addEventListener('click', e=> { 
+            window.location.href = "../Recommend/recommend.html"
+        })
+    </script>
   </body>
 </html>

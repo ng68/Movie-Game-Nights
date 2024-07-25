@@ -11,3 +11,13 @@ moviesbtn.addEventListener('click', e=> {
 gamesbtn.addEventListener('click', e=> { 
     window.location.href = "../Games/games.html"
 })
+
+const activityType = document.getElementById("activityType")
+const submitBtn = docume.getElementById("submitbtn")
+activityType.addEventListener('change', e => {
+    submitBtn.disabled = false
+})
+
+submitBtn.addEventListener('click', e => {
+    window.location.href = "success.html"
+})

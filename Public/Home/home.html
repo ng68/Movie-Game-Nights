@@ -46,28 +46,15 @@
             class="w3-button w3-display-topright">×</span>
             <br>
             <div class="w3-dropdown-click w3-margin-bottom">
-              <button id="activitybtn" onclick="toggleDropdown()" class="w3-button w3-indigo w3-hover-blue w3-center"><i class="fa fa-mouse-pointer"></i> Select Activity</button>
+              <button id="activitybtn" class="w3-button w3-indigo w3-hover-blue w3-center"><i class="fa fa-mouse-pointer"></i> Select Activity</button>
               <div id="activitydropdown" class="w3-dropdown-content w3-bar-block w3-border">
-                <a id="activitymoviebtn" onclick="changeActivity('movie')" class="w3-bar-item w3-button w3-indigo w3-hover-blue">Movie Night</a>
-                <a id="activitygamebtn" onclick="changeActivity('game')"class="w3-bar-item w3-button w3-indigo w3-hover-blue">Game Night</a>
+                <a id="activitymoviebtn" class="w3-bar-item w3-button w3-indigo w3-hover-blue">Movie Night</a>
+                <a id="activitygamebtn" class="w3-bar-item w3-button w3-indigo w3-hover-blue">Game Night</a>
               </div>
             </div>
           </header>
           <div id="pollbody" class="w3-container w3-theme-l2">
-            <p><label><i class="fa fa-male"></i> Number of Voters</label></p>
-            <select class="w3-select w3-border" name="Voters">
-              <option value="" disabled selected>0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-            </select>
-            <br>
-            <br>    
+                
           </div>
           <footer class="w3-container w3-theme-l3 w3-center">
             <br>
@@ -83,10 +70,38 @@
         <div class="w3-row">
           <!-- Left Column -->
           <div class="w3-col m3">
-            <!-- Profile -->
             <div class="w3-card w3-round w3-white">
               <div class="w3-container">
-               <h1 class="w3-center">Instructions</h1>
+               <h1 class="w3-center">How It Works</h1>
+               
+              </div>
+            </div>
+            <br>
+            <div class="w3-card w3-round w3-white">
+              <div class="w3-container">
+                <h1 class="w3-center">Our Guidelines</h1>
+                <h3 class="w3-center" style="font-size: 16px;">Here are some of the rules we have been using movie and game nights. 
+                There are occassions where we don't enforce or follow all of them but in the interest of fairness we try our best to stick to them.</h2>
+                <h3>Movie Night:</h3>
+                <ul>
+                  <li>Each person gets one movie nomination, but is not required to nominate</li>
+                  <li>We do not have to have a nomination prepared prior to movie night but are generally allowed around 15-20 minutes to find a nomination</li>
+                  <li>The person who picked the winning movie is not allowed to nominate during the next movie night</li>
+                  <li>After nominations are in we usually take about 5-10 minutes researching the nominations (background, genre, cast etc.)</li>
+                  <li>Initial polling is through approval voting, meaning we each vote for any number of the nominations we are interested in watching</li>
+                  <li>In the event of a tie, we move to standard runoff voting, where each person votes for one nomination</li>
+                  <li>If the runoff vote ends in a tie, we use randomness (coin flip, random number generator etc.)</li>
+                </ul>
+                <h3>Game Night:</h3>
+                <ul>
+                  <li>Note: We do not always create polls on Game Night because there are times when we all want to play the same game anyways</li>
+                  <li>In the event that there is a wide range of games people want to play, we will create polls</li>
+                  <li>There are no limits to the number of game nominations we can add</li>
+                  <li>We still use approval voting, but there are no runoffs for ties</li>
+                  <li>Since we usually can play multiple games in one Game Night, we will select the top 3 or 4 nominations with the most votes</li>
+                  <li>We then will play the games in order of length from shortest game time to longest to ensure every game gets played at least once</li>
+                  <li>For Example, A game of Codenames or Skribbl.io is much shorter than Rainbow Six Siege or Europa Universalis 4</li>
+                </ul>
               </div>
             </div>
             <br>
@@ -102,8 +117,10 @@
                   <div class="w3-container w3-padding w3-center" id="activepoll">
                     <h1>Current Poll</h1>
                     <hr>
-                    <div class="w3-bar">
-                      <button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById('newpoll').style.display='block'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button> 
+                    <div id="currentPollbody">
+                      <div class="w3-bar">
+                        <button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById('newpoll').style.display='block'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button> 
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -129,14 +146,50 @@
           <!-- Right Column -->
           <div class="w3-col m2">      
             <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
-              
+              <div class="w3-container">
+                <h1 class="w3-center">Recommendations List</h1>
+                <div class="w3-display-container mySlides">
+                  <!--<img src="" style="width:100%">-->
+                  <div class="w3-display-topmiddle w3-container w3-padding-32">
+                    <span class="w3-black w3-padding-large w3-animate-bottom">Name</span>
+                  </div>
+                </div>
+                <div class="w3-display-container mySlides">
+                  <!--<img src="" style="width:100%">-->
+                  <div class="w3-display-topmiddle w3-container w3-padding-32">
+                    <span class="w3-black w3-padding-large w3-animate-bottom">Name</span>
+                  </div>
+                </div>
+                <div class="w3-display-container mySlides">
+                  <!--<img src="" style="width:100%">-->
+                  <div class="w3-display-topmiddle w3-container w3-padding-32">
+                    <span class="w3-black w3-padding-large w3-animate-bottom">Name</span>
+                  </div>
+                </div>
+            
+                <!-- Slideshow next/previous buttons -->
+                <div class="w3-container w3-dark-grey w3-padding w3-xlarge">
+                  <div class="w3-left" onclick="plusDivs(-1)"><i class="fa fa-arrow-circle-left w3-hover-text-teal"></i></div>
+                  <div class="w3-right" onclick="plusDivs(1)"><i class="fa fa-arrow-circle-right w3-hover-text-teal"></i></div>
+                
+                  <div class="w3-center">
+                    <span class="w3-tag dots w3-border w3-transparent w3-hover-white" onclick="currentDiv(1)"></span>
+                    <span class="w3-tag dots w3-border w3-transparent w3-hover-white" onclick="currentDiv(2)"></span>
+                    <span class="w3-tag dots w3-border w3-transparent w3-hover-white" onclick="currentDiv(3)"></span>
+                  </div>
+                </div>
+               </div>
             </div>
             <br>
             
             <div class="w3-card w3-round w3-white w3-padding-16 w3-center">
-              
+              <div class="w3-container">
+                <h1 class="w3-center">Our Favorites</h1>
+                  <div id="favorites">
+                    
+                  </div>
+               </div>
             </div>
-            
           <!-- End Right Column -->
           </div>
           
@@ -147,56 +200,35 @@
       </div>
     
     <!-- Scripts -->
-    <script>
-      function toggleDropdown(type) {
-        var x = null
-        if (type == 'activity') {
-          x = document.getElementById("activitydropdown");
-        }
-        else if (type == 'nomNumber') {
-          x = document.getElementById("numberdropdown");
-        }
-        if (x.className.indexOf("w3-show") == -1) { 
-          x.className += " w3-show";
-        } else {
-          x.className = x.className.replace(" w3-show", "");
-        }
+     <script>
+      // Slideshow
+      var slideIndex = 1;
+      showDivs(slideIndex);
+
+      function plusDivs(n) {
+        showDivs(slideIndex += n);
       }
-      function updateActivityDropdown(selectedActivity) {
-        const activitybtn = document.getElementById("activitybtn")
-        const activitydropdown = document.getElementById("activitydropdown")
-        if (selectedActivity == 'movie') {
-          activitybtn.innerHTML = 'Movie Night'
-          activitydropdown.innerHTML = '<a id="activitygamebtn" class="w3-bar-item w3-button w3-indigo w3-hover-blue">Game Night</a>'
-          const activitygamebtn = document.getElementById("activitygamebtn")
-          activitygamebtn.addEventListener('click', e=> {
-              toggleDropdown() 
-              updateActivityDropdown('game')
-          })
-        }
-        else if (selectedActivity == 'game') {
-          activitybtn.innerHTML = 'Game Night'
-          activitydropdown.innerHTML = '<a id="activitymoviebtn" class="w3-bar-item w3-button w3-indigo w3-hover-blue">Movie Night</a>'
-          const activitymoviebtn = document.getElementById("activitymoviebtn")
-          activitymoviebtn.addEventListener('click', e=> {
-              toggleDropdown() 
-              updateActivityDropdown('movie')
-          })
-        }
+
+      function currentDiv(n) {
+        showDivs(slideIndex = n);
       }
-      function changeActivity(activity) {
-        const pollbody = document.getElementById("pollbody")
-        if (activity == 'movie') {
-          toggleDropdown()
-          updateActivityDropdown('movie')
-          
+
+      function showDivs(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlides");
+        var dots = document.getElementsByClassName("dots");
+        if (n > x.length) {slideIndex = 1}    
+        if (n < 1) {slideIndex = x.length} ;
+        for (i = 0; i < x.length; i++) {
+          x[i].style.display = "none";  
         }
-        else if (activity == 'game') {
-          toggleDropdown()
-          updateActivityDropdown('game')
+        for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" w3-white", "");
         }
-    }
-    </script>
+        x[slideIndex-1].style.display = "block";  
+        dots[slideIndex-1].className += " w3-white";
+      }
+     </script>
     <script type="module" src="home.js"></script>
   </body>
 </html>
