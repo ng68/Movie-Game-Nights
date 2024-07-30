@@ -1,5 +1,9 @@
+const port = process.env.PORT;
+if (port == null || port == "") {
+	port = 8080;
+}
 const { Server } = require("socket.io");
-const io = new Server(8080, {
+const io = new Server(port, {
   cors: {
     origin: "https://movie-and-game-nights.web.app/Home/home.html"
   }
