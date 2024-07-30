@@ -1,5 +1,7 @@
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js';
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyB05-JI2yJoQK5XQ7GzyiCjI_WymHj2EO4",
     authDomain: "movie-and-game-nights.firebaseapp.com",
@@ -12,13 +14,17 @@ const firebaseConfig = {
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const socket = io("https://movie-game-nights.onrender.com/home");
+const auth = getAuth();
+//Backend Functions
+const functions = getFunctions();
+const checkUser = httpsCallable(functions, 'checkUser');
+const createPoll = httpsCallable(functions, 'createPoll');
 
-//const socket = io();
 const moviesbtn = document.getElementById("moviesbtn")
 const gamesbtn = document.getElementById("gamesbtn")
 const recommendbtn = document.getElementById("recommendbtn")
-const activepoll = document.getElementById("activepoll")
-const polldiv = document.getElementById("polldiv")
+const activepollbody = document.getElementById("currentPollbody")
 
 const activitybtn = document.getElementById("activitybtn")
 activitybtn.addEventListener('click', e => {
@@ -33,16 +39,27 @@ activitygamebtn.addEventListener('click', e => {
   changeActivity('game')
 })
 
-const auth = getAuth();
+var currentActivity = null;
+const memberCreate = document.getElementById("memberCreate")
+//Check logged in user
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    const email = user.email;
-    const uid = user.uid;
-    //socket.emit()
+    console.log("Logged in as " + user.email)
+    checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          console.log("Verified as Member")
+          memberCreate.innerHTML = '<button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById(\'newpoll\').style.display=\'block\'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button>'
+        }
+      });
   } else {
     window.location.href = "../index.html"
   }
 });
+
+
 
 function toggleDropdown() {
   const x = document.getElementById("activitydropdown") 
@@ -73,6 +90,7 @@ function updateActivityDropdown(selectedActivity) {
     })
   }
 }
+
 function changeActivity(activity) {
   const pollbody = document.getElementById("pollbody")
   const startpollbtn = document.getElementById("startpollbtn")
@@ -80,6 +98,7 @@ function changeActivity(activity) {
   if (activity == 'movie') {
     toggleDropdown()
     updateActivityDropdown('movie')
+    currentActivity = 'movie'
     pollbody.innerHTML = 
       '<p><label><i class="fa fa-male"></i> Number of Voters</label></p>' +
       '<select id="numMovieVoters" class="w3-select w3-border" name="Voters">' +
@@ -107,6 +126,7 @@ function changeActivity(activity) {
   else if (activity == 'game') {
     toggleDropdown()
     updateActivityDropdown('game')
+    currentActivity = 'game'
     pollbody.innerHTML = 
       '<div id="gamechecklist">' +
       '</div>' +
@@ -185,14 +205,6 @@ function changeActivity(activity) {
   }
 }
 
-function startGamePoll() {
-
-}
-
-function startMoviePoll() {
-
-}
-
 function checkGameModal() {
   const gameCheck = document.getElementsByName('gamecheck')
   const numGameVoters = document.getElementById('numGameVoters')
@@ -211,7 +223,81 @@ function checkGameModal() {
     startpollbtn.disabled = true
   }
 }
+//Start Polling
+const startpollbtn = document.getElementById("startpollbtn")
+startpollbtn.addEventListener('click', startPoll())
+function startPoll() {
+  var numVoters = null
+  if (currentActivity == 'movie') {
+    numVoters = document.getElementById('numMovieVoters').selectedIndex
+    const pollData = {
+      maxVotes: numVoters
+    };
+    socket.emit('create-movie-poll', pollData)
+  }
+  else if (currentActivity == 'game') {
+    numVoters = document.getElementById('numGameVoters').selectedIndex
+  }
+  
+}
+//Create New Movie Poll 
+socket.on('new-movie-poll', data => {
+  activepollbody.innerHTML = 
+  '<div class="w3-center">' +
+    '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
+    '<h3 class="w3-center" style="font-size: 16px;">Vote Count: ' + data.totalVotes + '</h3>' +
+  '</div>' +
+  '<div class="w3-center" id="nominationList">' +
+  '</div>' +
+  '<hr>' +
+  '<div class="w3-center" id="memberBtns">' +
+  '</div>';
+  const memberBtns = document.getElementById("memberBtns");
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("Logged in as " + user.email)
+      checkUser()
+        .then((result) => {
+          /** @type {any} */
+          const data = result.data;
+          if (data.isMember) {
+            memberBtns.innerHTML = 
+            '<label><b>Movie Name</b></label>' +
+            '<input class="w3-input w3-border" type="text" id="movieName">' +
+            '<br>' +
+            '<button class="w3-button w3-green" id="AddNominationbtn">Add Nomination</button>';
+            const movieName = document.getElementById('movieName');
+            const addNombtn = document.getElementById('AddNominationbtn');
+            addNombtn.addEventListener('click', e => {
+              if (movieName.value == '') {
+                alert("Please enter a movie name")
+              }
+              else {
+                socket.emit('add-movie', movieName.value);
+              }
+            })
+          }
+        });
+    } else {
+      window.location.href = "../index.html"
+    }
+  });
+    
+})
+//Movie Nomination Added Response
+socket.on('add-movie-response', data => {
+  const addNombtn = document.getElementById('AddNominationbtn');
+  if(data == "OK") {
+    addNombtn.disabled = true;
+  }
+})
+//Update Movie Nominations List
+socket.on('new-nomination', data => {
+  
+})
 
+
+//Create Poll
 
 moviesbtn.addEventListener('click', e=> { 
     window.location.href = "../Movies/movies.html"
@@ -223,17 +309,5 @@ recommendbtn.addEventListener('click', e=> {
     window.location.href = "../Recommend/recommend.html"
 })
 
-
-/*startpollbtn.addEventListener('click', e => {
-  
-})*/
-
-
-
-/*socket.on('user-checked', data => {
-    if(data.isAdmin){
-        
-    }
-});*/
 
 

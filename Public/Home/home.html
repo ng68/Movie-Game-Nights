@@ -79,9 +79,10 @@
             <br>
             <div class="w3-card w3-round w3-white">
               <div class="w3-container">
-                <h1 class="w3-center">Our Guidelines</h1>
-                <h3 class="w3-center" style="font-size: 16px;">Here are some of the rules we have been using movie and game nights. 
-                There are occassions where we don't enforce or follow all of them but in the interest of fairness we try our best to stick to them.</h2>
+                <h1 class="w3-center">Our Process</h1>
+                <h3 class="w3-center" style="font-size: 16px;">Here are some of the methods we have been using for our movie and game nights. 
+                There are occassions where we don't enforce or follow all of them but in the interest of fairness we try our best to stick to them.</h3>
+                <hr>
                 <h3>Movie Night:</h3>
                 <ul>
                   <li>Each person gets one movie nomination, but is not required to nominate</li>
@@ -100,7 +101,7 @@
                   <li>We still use approval voting, but there are no runoffs for ties</li>
                   <li>Since we usually can play multiple games in one Game Night, we will select the top 3 or 4 nominations with the most votes</li>
                   <li>We then will play the games in order of length from shortest game time to longest to ensure every game gets played at least once</li>
-                  <li>For Example, A game of Codenames or Skribbl.io is much shorter than Rainbow Six Siege or Europa Universalis 4</li>
+                  <li>For example, A game of Codenames or Skribbl.io is much shorter than Rainbow Six Siege or Europa Universalis 4</li>
                 </ul>
               </div>
             </div>
@@ -118,8 +119,7 @@
                     <h1>Current Poll</h1>
                     <hr>
                     <div id="currentPollbody">
-                      <div class="w3-bar">
-                        <button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById('newpoll').style.display='block'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button> 
+                      <div class="w3-bar" id="memberCreate"> 
                       </div>
                     </div>
                   </div>
@@ -148,22 +148,30 @@
             <div class="w3-card w3-round w3-white">
               <div class="w3-container">
                 <h1 class="w3-center">Our Favorites</h1>
+                <hr>
                 <div class="w3-display-container mySlides">
-                  <!--<img src="" style="width:100%">-->
+                  <img src="../Images//Favorites/Favorite1.jpg" style="width:100%">
                   <div class="w3-display-topmiddle w3-container w3-padding-32">
-                    <span class="w3-black w3-padding-large">Name</span>
                   </div>
                 </div>
                 <div class="w3-display-container mySlides">
-                  <!--<img src="" style="width:100%">-->
+                  <img src="../Images//Favorites/Favorite2.jpg" style="width:100%">
                   <div class="w3-display-topmiddle w3-container w3-padding-32">
-                    <span class="w3-black w3-padding-large">Name</span>
                   </div>
                 </div>
                 <div class="w3-display-container mySlides">
-                  <!--<img src="" style="width:100%">-->
+                  <img src="../Images//Favorites/Favorite3.jpg" style="width:100%">
                   <div class="w3-display-topmiddle w3-container w3-padding-32">
-                    <span class="w3-black w3-padding-large">Name</span>
+                  </div>
+                </div>
+                <div class="w3-display-container mySlides">
+                  <img src="../Images//Favorites/Favorite4.jpg" style="width:100%">
+                  <div class="w3-display-topmiddle w3-container w3-padding-32">
+                  </div>
+                </div>
+                <div class="w3-display-container mySlides">
+                  <img src="../Images//Favorites/Favorite5.jpg" style="width:100%">
+                  <div class="w3-display-topmiddle w3-container w3-padding-32">
                   </div>
                 </div>
             
@@ -171,13 +179,8 @@
                 <div class="w3-container w3-dark-grey w3-padding w3-xlarge">
                   <div class="w3-left" onclick="plusDivs(-1)"><i class="fa fa-arrow-circle-left w3-hover-text-teal"></i></div>
                   <div class="w3-right" onclick="plusDivs(1)"><i class="fa fa-arrow-circle-right w3-hover-text-teal"></i></div>
-                
-                  <div class="w3-center">
-                    <span class="w3-tag dots w3-border w3-transparent w3-hover-white" onclick="currentDiv(1)"></span>
-                    <span class="w3-tag dots w3-border w3-transparent w3-hover-white" onclick="currentDiv(2)"></span>
-                    <span class="w3-tag dots w3-border w3-transparent w3-hover-white" onclick="currentDiv(3)"></span>
-                  </div>
                 </div>
+                <br>
                </div>
             </div>
             <br>
@@ -185,9 +188,10 @@
             <div class="w3-card w3-round w3-white">
               <div class="w3-container">
                 <h1 class="w3-center">Recommendations</h1>
-                  <div id="recommendations">
-                    
-                  </div>
+                <hr>
+                <div id="recommendations">
+                  
+                </div>
                </div>
             </div>
           <!-- End Right Column -->
@@ -202,8 +206,8 @@
     <!-- Scripts -->
      <script>
       // Slideshow
-      var slideIndex = 1;
-      showDivs(slideIndex);
+      var slideIndex = 0;
+      carousel();
 
       function plusDivs(n) {
         showDivs(slideIndex += n);
@@ -216,19 +220,21 @@
       function showDivs(n) {
         var i;
         var x = document.getElementsByClassName("mySlides");
-        var dots = document.getElementsByClassName("dots");
         if (n > x.length) {slideIndex = 1}    
         if (n < 1) {slideIndex = x.length} ;
         for (i = 0; i < x.length; i++) {
           x[i].style.display = "none";  
         }
-        for (i = 0; i < dots.length; i++) {
-          dots[i].className = dots[i].className.replace(" w3-white", "");
-        }
         x[slideIndex-1].style.display = "block";  
-        dots[slideIndex-1].className += " w3-white";
+      }
+
+      function carousel() {
+        slideIndex++;
+        showDivs(slideIndex) 
+        setTimeout(carousel, 4000);    
       }
      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
     <script type="module" src="home.js"></script>
   </body>
 </html>
