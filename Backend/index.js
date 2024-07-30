@@ -1,8 +1,13 @@
-let port = process.env.PORT;
-if (port == null || port == "") {
-	port = 8080;
-}
-const io = require('socket.io')(port);
+import { createServer } from "http";
+import { Server } from "socket.io";
+
+const httpServer = createServer();
+const io = new Server(httpServer, {
+  cors: {
+    origin: "https://movie-and-game-nights.web.app/Home/home.html"
+  }
+});
+
 const homeNamespace = io.of('/home');
 const recommendNamespace = io.of('/recommend');
 
