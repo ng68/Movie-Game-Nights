@@ -1,8 +1,5 @@
-import { createServer } from "http";
-import { Server } from "socket.io";
-
-const httpServer = createServer();
-const io = new Server(httpServer, {
+const { Server } = require("socket.io");
+const io = new Server(8080, {
   cors: {
     origin: "https://movie-and-game-nights.web.app/Home/home.html"
   }
