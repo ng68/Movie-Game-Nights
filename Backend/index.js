@@ -12,8 +12,8 @@ const io = new Server(port, {
 const homeNamespace = io.of('/home');
 
 var activePoll = null;
-var nominatorTrack = null;
-var voterTrack = null; 
+var nominatorTrack = [];
+var voterTrack = []; 
 
 homeNamespace.on('connection', socket => {
     console.log("homepage connected");
@@ -39,7 +39,6 @@ homeNamespace.on('connection', socket => {
                 maxVotes: data.numVoters,
                 totalVotes: 0,
                 nominations: votesMap,
-                nominatorList: [],
                 runoffPoll: null
             };
             homeNamespace.emit('new-movie-poll', activePoll);

@@ -238,6 +238,7 @@ function startPoll() {
                 uid: user.uid,
                 maxVotes: numVoters
               };
+              console.log("Sending Poll Data...");
               socket.emit('create-movie-poll', pollData)
               document.getElementById('newpoll').style.display='none'
             }
