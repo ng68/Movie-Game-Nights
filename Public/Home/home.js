@@ -397,15 +397,15 @@ socket.on('new-movie-nomination', data => {
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   nominationList.innerHTML == '';
   voteModalbody.innerHTML == '';
-  for (var [key, value] of data) {
+  for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + key + ': ' + ' Votes: ' + value + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationsMap[i][0] + ': ' + ' Votes: ' + nominationsMap[i][1] + '</h3>' +
       '<br>';
     voteModalbody.innerHTML =+
       '<br>' +
-      '<label>' + key + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ key + '">';
+      '<label>' + nominationsMap[i][0] + ' </label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ nominationsMap[i][0] + '">';
   }
   beginVotingBtn.disabled = false;
 });
@@ -478,10 +478,10 @@ socket.on('update-poll', data => {
   const nominationList = document.getElementById("nominationList");
   voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
   nominationList.innerHTML = '';
-  for (var [key, value] of data.nominations) {
+  for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + key + ': ' + ' Votes: ' + value + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationsMap[i][0] + ': ' + ' Votes: ' + nominationsMap[i][1] + '</h3>' +
       '<br>';
   }
 });

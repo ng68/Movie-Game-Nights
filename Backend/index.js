@@ -34,14 +34,13 @@ homeNamespace.on('connection', socket => {
             socket.emit('error', "Active Poll is not null");
         }
         else {
-            var votesMap = new Map();
             nominatorTrack = [];
             voterTrack = [];
             activePoll = {
                 activity: 'movie',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
-                nominations: votesMap,
+                nominationsMap: [],
                 runoffPoll: null
             };
             homeNamespace.emit('new-movie-poll', activePoll);
@@ -52,7 +51,6 @@ homeNamespace.on('connection', socket => {
             socket.emit('error', "Active Poll is not null");
         }
         else {
-            var votesMap = new Map();
             voterTrack = [];
             data.nominations.forEach(name => {
                 votesMap.set(name, 0);
@@ -61,7 +59,7 @@ homeNamespace.on('connection', socket => {
                 activity: 'game',
                 maxVotes: data.numVoters,
                 totalVotes: 0,
-                nominations: votesMap
+                nominationsMap: []
             };
             homeNamespace.emit('new-game-poll', activePoll);
         }
@@ -72,8 +70,9 @@ homeNamespace.on('connection', socket => {
         }
         else {
             nominatorTrack.push(data.uid);
-            activePoll.nominations.set(data.name, 0);
-            homeNamespace.emit('new-movie-nomination', activePoll.nominations);
+            var newNom = [data.name, 0]
+            activePoll.nominationsMap.push(newNom);
+            homeNamespace.emit('new-movie-nomination', activePoll.nominationsMap);
             socket.emit('add-movie-response', "OK"); 
         }
     });
@@ -93,9 +92,9 @@ homeNamespace.on('connection', socket => {
         else {
             voterTrack.push(data.uid);
             data.votes.forEach(vote => {
-                for (var [key, value] of activePoll.votesMap) {
-                    if (vote == key) {
-                        value++;
+                for (var i = 0; i < activePoll.nominationsMap.length; i++) {
+                    if (nominationsMap[i][0] == vote) {
+                        (nominationsMap[i][1])++;
                         break;
                     }
                 }
