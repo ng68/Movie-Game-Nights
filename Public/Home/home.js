@@ -186,7 +186,7 @@ function changeActivity(activity) {
         }
         else {
           gamechecklist.innerHTML = gamechecklist.innerHTML + 
-          '<input class="w3-check" checked="checked" type="checkbox" name="gamecheck" value='+ gameName.value + '>' +
+          '<input class="w3-check" checked="checked" type="checkbox" name="gamecheck" value="' + gameName.value + '">' +
           '<label> ' + gameName.value + '</label>' +
           '<br>';
           gameName.value = ''
@@ -333,6 +333,15 @@ socket.on('new-movie-poll', data => {
   '<hr>' +
   '<div class="w3-center" id="memberBtns">' +
   '</div>';
+  const voteModalheader = document.getElementById("voteModalHeader");
+  if (data.activity == 'movie') {
+    voteModalheader.innerHTML = 
+    '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + data.date + '</h3>'
+  }
+  else if (data.activity == 'game') {
+    voteModalheader.innerHTML = 
+    '<h3 class="w3-center" style="font-size: 20px;">Game Night - ' + data.date + '</h3>'
+  }
   const memberBtns = document.getElementById("memberBtns");
   const user = auth.currentUser;
   if (user) {
@@ -441,15 +450,15 @@ socket.on('new-game-poll', data => {
   const memberBtns = document.getElementById("memberBtns");
   const nominationList = document.getElementById("nominationList");
   const voteModalbody = document.getElementById("voteModalbody");
-  for (var [key, value] of data.nominations) {
+  for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + key + ': ' + ' Votes: ' + value + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
     voteModalbody.innerHTML =+
       '<br>' +
-      '<label>' + key + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ key + '">';
+      '<label>' + data.nominationsMap[i][0] + ' </label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">';
   }
   const user = auth.currentUser;
   if (user) {

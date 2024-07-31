@@ -15,6 +15,19 @@ var activePoll = null;
 var nominatorTrack = [];
 var voterTrack = []; 
 
+function getDate() {
+    // current timestamp in milliseconds
+    let ts = Date.now();
+  
+    let date_time = new Date(ts);
+    let date = date_time.getDate();
+    let month = date_time.getMonth() + 1;
+    let year = date_time.getFullYear();
+  
+    // prints date & time in YYYY-MM-DD format
+    return(month + "/" + date + "/" + year);
+}
+
 homeNamespace.on('connection', socket => {
     console.log("homepage connected");
     //Send Active Poll to newly connected User
@@ -37,6 +50,7 @@ homeNamespace.on('connection', socket => {
             nominatorTrack = [];
             voterTrack = [];
             activePoll = {
+                date: getDate(),
                 activity: 'movie',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
@@ -57,6 +71,7 @@ homeNamespace.on('connection', socket => {
                 votesMap.push([name, 0]);
             });
             activePoll = {
+                date: getDate(),
                 activity: 'game',
                 maxVotes: data.numVoters,
                 totalVotes: 0,
