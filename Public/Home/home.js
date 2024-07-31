@@ -324,9 +324,11 @@ function sendVote() {
 socket.on('new-movie-poll', data => {
   currentPollbody.innerHTML = 
   '<div class="w3-center">' +
+    '<h3 class="w3-center" style="font-size: 24px;">Game Night - ' + data.date + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
+  '<hr>' + 
   '<h3 class="w3-center" style="font-size: 20px;">Nominations</h3>' +
   '<div class="w3-center" id="nominationList">' +
   '</div>' +
@@ -409,17 +411,17 @@ socket.on('new-movie-nomination', data => {
   const nominationList = document.getElementById('nominationList');
   const voteModalbody = document.getElementById("voteModalbody");
   const beginVotingBtn = document.getElementById('beginVotingBtn');
-  nominationList.innerHTML == '';
-  voteModalbody.innerHTML == '';
+  nominationList.innerHTML = '';
+  voteModalbody.innerHTML = '';
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
-      '<br>' +
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ' - ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
     voteModalbody.innerHTML =+
       '<br>' +
-      '<label>' + data.nominationsMap[i][0] + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">';
+      '<label>' + data.nominationsMap[i][0] + '</label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">' +
+      '<br>';
   }
   beginVotingBtn.disabled = false;
 });
@@ -438,6 +440,7 @@ socket.on('voting-started', data => {
 socket.on('new-game-poll', data => {
   currentPollbody.innerHTML = 
   '<div class="w3-center">' +
+    '<h3 class="w3-center" style="font-size: 24px;">Game Night - ' + data.date + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
