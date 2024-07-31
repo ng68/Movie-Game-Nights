@@ -361,7 +361,7 @@ socket.on('new-movie-poll', data => {
           }
           else {
             var movieData = {
-              name: movieName,
+              name: movieName.value,
               email: user.email,
               uid: user.uid
             }
@@ -386,7 +386,12 @@ socket.on('add-movie-response', data => {
     addNombtn.disabled = true;
   }
   else if (data == "ERROR-1") {
-    alert("Error - You have already submitted a nomination")
+    alert("Error - You have already submitted a nomination");
+    addNombtn.disabled = true;
+  }
+  else if (data == "ERROR-2") {
+    alert("Error - You have already submitted a nomination");
+    addNombtn.disabled = true;
   }
 });
 //Update Movie Nominations List
@@ -400,7 +405,7 @@ socket.on('new-movie-nomination', data => {
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ' - ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
     voteModalbody.innerHTML =+
       '<br>' +
@@ -411,8 +416,12 @@ socket.on('new-movie-nomination', data => {
 });
 //Start Movie Polling
 socket.on('voting-started', data => {
+  alert(data);
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   const voteBtn = document.getElementById('voteBtn');
+  voteBtn.addEventListener('click', e => {
+    document.getElementById('voteModal').style.display='block';
+  });
   beginVotingBtn.disabled = true;
   voteBtn.disabled = false;
 })

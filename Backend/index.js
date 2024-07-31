@@ -69,6 +69,9 @@ homeNamespace.on('connection', socket => {
         if (nominatorTrack.includes(data.uid)) {
             socket.emit('add-movie-response', "ERROR-1");
         }
+        else if (nominatorTrack.length == activePoll.maxVotes) {
+            socket.emit('add-movie-response', "ERROR-2");
+        }
         else {
             nominatorTrack.push(data.uid);
             var newNom = [data.name, 0]
@@ -82,8 +85,8 @@ homeNamespace.on('connection', socket => {
             socket.emit('voting-started', "ERROR-1");
         }
         else {
-            console.log(data + " Began Voting");
-            homeNamespace.emit('voting-started', activePoll);
+            console.log(data + " Initiated Voting");
+            homeNamespace.emit('voting-started', "Voting has been opened!" );
         }
     })
     socket.on('vote', data => {
