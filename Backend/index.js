@@ -5,7 +5,7 @@ if (port == null || port == "") {
 const { Server } = require("socket.io");
 const io = new Server(port, {
   cors: {
-    origin: false//["https://movie-and-game-nights.web.app:*", "https://movie-and-game-nights.firebaseapp.com:*"]
+    origin: ["https://movie-and-game-nights.web.app", "https://movie-and-game-nights.firebaseapp.com"]
   }
 });
 
