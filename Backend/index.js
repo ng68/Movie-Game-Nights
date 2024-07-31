@@ -36,7 +36,7 @@ homeNamespace.on('connection', socket => {
             voterTrack = [];
             activePoll = {
                 activity: 'movie',
-                maxVotes: data.numVoters,
+                maxVotes: data.maxVotes,
                 totalVotes: 0,
                 nominations: votesMap,
                 runoffPoll: null

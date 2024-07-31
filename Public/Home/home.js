@@ -57,7 +57,8 @@ onAuthStateChanged(auth, (user) => {
         }
       });
   } else {
-    window.location.href = "../index.html"
+    alert("User is not logged in");
+    window.location.href = "../index.html";
   }
 });
 
@@ -220,33 +221,34 @@ function checkGameModal() {
 }
 //Create Poll
 const startpollbtn = document.getElementById("startpollbtn")
-startpollbtn.addEventListener('click', startPoll());
+startpollbtn.addEventListener('click', startPoll);
 function startPoll() {
   var numVoters = null
   if (currentActivity == 'movie') {
     numVoters = document.getElementById('numMovieVoters').selectedIndex
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("Logged in as " + user.email)
-        checkUser()
-          .then((result) => {
-            /** @type {any} */
-            const data = result.data;
-            if (data.isMember) {
-              const pollData = {
-                email: user.email,
-                uid: user.uid,
-                maxVotes: numVoters
-              };
-              console.log("Sending Poll Data...");
-              socket.emit('create-movie-poll', pollData)
-              document.getElementById('newpoll').style.display='none'
-            }
-          });
-      } else {
-        window.location.href = "../index.html"
-      }
-    });
+    const user = auth.currentUser;
+    if (user) {
+      console.log("Logged in as " + user.email)
+      checkUser()
+        .then((result) => {
+          /** @type {any} */
+          const data = result.data;
+          if (data.isMember) {
+            const pollData = {
+              email: user.email,
+              uid: user.uid,
+              maxVotes: numVoters
+            };
+            console.log("Sending Poll Data...");
+            socket.emit('create-movie-poll', pollData)
+            document.getElementById('newpoll').style.display='none'
+          }
+        });
+    } else {
+      alert("User is not logged in");
+      window.location.href = "../index.html";
+    }
+;
   }
   else if (currentActivity == 'game') {
     numVoters = document.getElementById('numGameVoters').selectedIndex
@@ -257,60 +259,60 @@ function startPoll() {
         gameNames.push(gamecheck[i].value);
       }
     }
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("Logged in as " + user.email)
-        checkUser()
-          .then((result) => {
-            /** @type {any} */
-            const data = result.data;
-            if (data.isMember) {
-              const pollData = {
-                email: email,
-                uid: uid,
-                maxVotes: numVoters,
-                nominations: gameNames
-              }
-              socket.emit('create-game-poll', pollData)
-              document.getElementById('newpoll').style.display='none'
+    const user = auth.currentUser;
+    if (user) {
+      console.log("Logged in as " + user.email)
+      checkUser()
+        .then((result) => {
+          /** @type {any} */
+          const data = result.data;
+          if (data.isMember) {
+            const pollData = {
+              email: email,
+              uid: uid,
+              maxVotes: numVoters,
+              nominations: gameNames
             }
-          });
-      } else {
-        window.location.href = "../index.html"
-      }
-    });
+            socket.emit('create-game-poll', pollData)
+            document.getElementById('newpoll').style.display='none'
+          }
+        });
+    } else {
+      window.location.href = "../index.html"
+    }
   }
 }
 //Submit Vote
 const submitVoteBtn = document.getElementById("submitVoteBtn")
-submitVoteBtn.addEventListener('click', sendVote());
+submitVoteBtn.addEventListener('click', sendVote);
 function sendVote() {
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      checkUser()
-      .then((result) => {
-        /** @type {any} */
-        const data = result.data;
-        if (data.isMember) {
-          var voteData = {
-            email: user.email,
-            uid: user.uid,
-            votes: []
-          }
-          const voteCheck = document.getElementsByName("voteCheck");
-          for (var i = 0; i < voteCheck.length; i++) {
-            if (voteCheck[i].checked) {
-              voteData.votes.push(voteCheck.value);
-            }
-          }
-          socket.emit('vote', voteData);
-          document.getElementById('voteModal').style.display='none';
+  console.log("Sending Vote...");
+  const user = auth.currentUser;
+  if (user) {
+    checkUser()
+    .then((result) => {
+      /** @type {any} */
+      const data = result.data;
+      if (data.isMember) {
+        var voteData = {
+          email: user.email,
+          uid: user.uid,
+          votes: []
         }
-      });
-    } else {
-      window.location.href = "../index.html"
-    }
-  });
+        const voteCheck = document.getElementsByName("voteCheck");
+        for (var i = 0; i < voteCheck.length; i++) {
+          if (voteCheck[i].checked) {
+            voteData.votes.push(voteCheck.value);
+          }
+        }
+        socket.emit('vote', voteData);
+        document.getElementById('voteModal').style.display='none';
+      }
+    });
+  } else {
+    alert("User is not logged in");
+    window.location.href = "../index.html";
+  }
 }
 
 //Create New Movie Poll 
@@ -327,49 +329,50 @@ socket.on('new-movie-poll', data => {
   '<div class="w3-center" id="memberBtns">' +
   '</div>';
   const memberBtns = document.getElementById("memberBtns");
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log("Logged in as " + user.email)
-      checkUser()
-      .then((result) => {
-        /** @type {any} */
-        const data = result.data;
-        if (data.isMember) {
-          memberBtns.innerHTML = 
-          '<label><b>Movie Name</b></label>' +
-          '<input class="w3-input w3-border" type="text" id="movieName">' +
-          '<br>' +
-          '<button class="w3-button w3-green" id="AddNominationbtn">Add Nomination</button>' +
-          '<br>' +
-          '<button class="w3-button w3-blue" id="voteBtn" disabled>Vote</button>' +
-          '<br>' +
-          '<button class="w3-button w3-black" id="beginVotingBtn" disabled>Begin Voting</button>';
-          const movieName = document.getElementById('movieName');
-          const addNombtn = document.getElementById('AddNominationbtn');
-          const beginVotingBtn = document.getElementById('beginVotingBtn');
-          addNombtn.addEventListener('click', e => {
-            if (movieName.value == '') {
-              alert("Please enter a movie name")
+  const user = auth.currentUser;
+  if (user) {
+    checkUser()
+    .then((result) => {
+      /** @type {any} */
+      const data = result.data;
+      if (data.isMember) {
+        memberBtns.innerHTML = 
+        '<label><b>Movie Name</b></label>' +
+        '<input class="w3-input w3-border" type="text" id="movieName">' +
+        '<br>' +
+        '<button class="w3-button w3-green" id="AddNominationbtn">Add Nomination</button>' +
+        '<br>' +
+        '<br>' +
+        '<button class="w3-button w3-blue" id="voteBtn" disabled>Vote</button>' +
+        '<br>' +
+        '<br>' +
+        '<button class="w3-button w3-black" id="beginVotingBtn" disabled>Begin Voting</button>';
+        const movieName = document.getElementById('movieName');
+        const addNombtn = document.getElementById('AddNominationbtn');
+        const beginVotingBtn = document.getElementById('beginVotingBtn');
+        addNombtn.addEventListener('click', e => {
+          if (movieName.value == '') {
+            alert("Please enter a movie name")
+          }
+          else {
+            var movieData = {
+              name: movieName,
+              email: user.email,
+              uid: user.uid
             }
-            else {
-              var movieData = {
-                name: movieName,
-                email: user.email,
-                uid: user.uid
-              }
-              socket.emit('add-movie', movieData);
-            }
-          })
-          beginVotingBtn.addEventListener('click', e => {
-            socket.emit('begin-vote', user.email);
-          })
-        }
-      }); 
-    } else {
-      window.location.href = "../index.html"
-    }
-  });  
-});
+            socket.emit('add-movie', movieData);
+          }
+        })
+        beginVotingBtn.addEventListener('click', e => {
+          socket.emit('begin-vote', user.email);
+        })
+      }
+    }); 
+  } else {
+    alert("User is not logged in");
+    window.location.href = "../index.html";
+  }
+});  
 //Movie Nomination Added Response
 socket.on('add-movie-response', data => {
   const addNombtn = document.getElementById('AddNominationbtn');
@@ -434,28 +437,26 @@ socket.on('new-game-poll', data => {
       '<label>' + key + ' </label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ key + '">';
   }
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      console.log("Logged in as " + user.email)
-      checkUser()
-        .then((result) => {
-          /** @type {any} */
-          const data = result.data;
-          if (data.isMember) {
-            memberBtns.innerHTML = 
-              '<br>' +
-              '<button class="w3-button w3-blue" id="voteBtn">Vote</button>';
-            const voteBtn = document.getElementById('voteBtn');
-            voteBtn.addEventListener('click', e => {
-              document.getElementById('voteModal').style.display='block';
-            });
-          }
-        });
-    } else {
-      window.location.href = "../index.html"
-    }
-  });
-  
+  const user = auth.currentUser;
+  if (user) {
+    checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          memberBtns.innerHTML = 
+            '<br>' +
+            '<button class="w3-button w3-blue" id="voteBtn">Vote</button>';
+          const voteBtn = document.getElementById('voteBtn');
+          voteBtn.addEventListener('click', e => {
+            document.getElementById('voteModal').style.display='block';
+          });
+        }
+      });
+  } else {
+    alert("User is not logged in");
+    window.location.href = "../index.html";
+  }
 });
 //Response from Vote Submission
 socket.on('vote-response', data => {
