@@ -24,7 +24,7 @@ const createPoll = httpsCallable(functions, 'createPoll');
 const moviesbtn = document.getElementById("moviesbtn")
 const gamesbtn = document.getElementById("gamesbtn")
 const recommendbtn = document.getElementById("recommendbtn")
-const activepollbody = document.getElementById("currentPollbody")
+const currentPollbody = document.getElementById("currentPollbody")
 
 const activitybtn = document.getElementById("activitybtn")
 activitybtn.addEventListener('click', e => {
@@ -39,29 +39,27 @@ activitygamebtn.addEventListener('click', e => {
   changeActivity('game')
 })
 
-//Set Env
+var currentActivity = null;
+//Check User
 onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log("Logged in as " + user.email)
-    process.env.EMAIL = user.email;
-    process.env.UID = user.uid;
+    checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          console.log("Verified as Member")
+          currentPollbody.innerHTML = 
+            '<div class="w3-bar">' + 
+              '<button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById(\'newpoll\').style.display=\'block\'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button>' +
+            '</div>';
+        }
+      });
   } else {
     window.location.href = "../index.html"
   }
 });
-
-var currentActivity = null;
-const memberCreate = document.getElementById("memberCreate")
-//Check logged in user
-checkUser({email: process.env.EMAIL, uid: process.env.UID})
-  .then((result) => {
-    /** @type {any} */
-    const data = result.data;
-    if (data.isMember) {
-      console.log("Verified as Member")
-      memberCreate.innerHTML = '<button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById(\'newpoll\').style.display=\'block\'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button>'
-    }
-  });
 
 function toggleDropdown() {
   const x = document.getElementById("activitydropdown") 
@@ -120,9 +118,6 @@ function changeActivity(activity) {
     numMovieVoters.addEventListener('change', e => {
       startpollbtn.disabled = false
     })
-
-    //startpollbtn.removeEventListener('click', startGamePoll());
-    //startpollbtn.addEventListener('click', startMoviePoll());
   }
   //Game Night Modal Version
   else if (activity == 'game') {
@@ -225,18 +220,32 @@ function checkGameModal() {
 }
 //Create Poll
 const startpollbtn = document.getElementById("startpollbtn")
-startpollbtn.addEventListener('click', startPoll())
+startpollbtn.addEventListener('click', startPoll());
 function startPoll() {
   var numVoters = null
   if (currentActivity == 'movie') {
     numVoters = document.getElementById('numMovieVoters').selectedIndex
-    const pollData = {
-      email: process.env.EMAIL,
-      uid: process.env.UID,
-      maxVotes: numVoters
-    };
-    socket.emit('create-movie-poll', pollData)
-    document.getElementById('newpoll').style.display='none'
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Logged in as " + user.email)
+        checkUser()
+          .then((result) => {
+            /** @type {any} */
+            const data = result.data;
+            if (data.isMember) {
+              const pollData = {
+                email: user.email,
+                uid: user.uid,
+                maxVotes: numVoters
+              };
+              socket.emit('create-movie-poll', pollData)
+              document.getElementById('newpoll').style.display='none'
+            }
+          });
+      } else {
+        window.location.href = "../index.html"
+      }
+    });
   }
   else if (currentActivity == 'game') {
     numVoters = document.getElementById('numGameVoters').selectedIndex
@@ -247,20 +256,65 @@ function startPoll() {
         gameNames.push(gamecheck[i].value);
       }
     }
-    const pollData = {
-      email: process.env.EMAIL,
-      uid: process.env.UID,
-      maxVotes: numVoters,
-      nominations: gameNames
-    }
-    socket.emit('create-game-poll', pollData)
-    document.getElementById('newpoll').style.display='none'
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Logged in as " + user.email)
+        checkUser()
+          .then((result) => {
+            /** @type {any} */
+            const data = result.data;
+            if (data.isMember) {
+              const pollData = {
+                email: email,
+                uid: uid,
+                maxVotes: numVoters,
+                nominations: gameNames
+              }
+              socket.emit('create-game-poll', pollData)
+              document.getElementById('newpoll').style.display='none'
+            }
+          });
+      } else {
+        window.location.href = "../index.html"
+      }
+    });
   }
-  
 }
+//Submit Vote
+const submitVoteBtn = document.getElementById("submitVoteBtn")
+submitVoteBtn.addEventListener('click', sendVote());
+function sendVote() {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          var voteData = {
+            email: user.email,
+            uid: user.uid,
+            votes: []
+          }
+          const voteCheck = document.getElementsByName("voteCheck");
+          for (var i = 0; i < voteCheck.length; i++) {
+            if (voteCheck[i].checked) {
+              voteData.votes.push(voteCheck.value);
+            }
+          }
+          socket.emit('vote', voteData);
+          document.getElementById('voteModal').style.display='none';
+        }
+      });
+    } else {
+      window.location.href = "../index.html"
+    }
+  });
+}
+
 //Create New Movie Poll 
 socket.on('new-movie-poll', data => {
-  activepollbody.innerHTML = 
+  currentPollbody.innerHTML = 
   '<div class="w3-center">' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Vote Count: ' + data.totalVotes + '</h3>' +
@@ -272,39 +326,48 @@ socket.on('new-movie-poll', data => {
   '<div class="w3-center" id="memberBtns">' +
   '</div>';
   const memberBtns = document.getElementById("memberBtns");
-  checkUser({email: process.env.EMAIL, uid: process.env.UID})
-    .then((result) => {
-      /** @type {any} */
-      const data = result.data;
-      if (data.isMember) {
-        memberBtns.innerHTML = 
-        '<label><b>Movie Name</b></label>' +
-        '<input class="w3-input w3-border" type="text" id="movieName">' +
-        '<br>' +
-        '<button class="w3-button w3-green" id="AddNominationbtn">Add Nomination</button>' +
-        '<br>' +
-        '<button class="w3-button w3-black" id="beginVotingBtn">Begin Voting</button>';
-        const movieName = document.getElementById('movieName');
-        const addNombtn = document.getElementById('AddNominationbtn');
-        const beginVotingBtn = document.getElementById('beginVotingBtn');
-        addNombtn.addEventListener('click', e => {
-          if (movieName.value == '') {
-            alert("Please enter a movie name")
-          }
-          else {
-            var movieData = {
-              name: movieName,
-              email: process.env.EMAIL,
-              uid: process.env.UID
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("Logged in as " + user.email)
+      checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          memberBtns.innerHTML = 
+          '<label><b>Movie Name</b></label>' +
+          '<input class="w3-input w3-border" type="text" id="movieName">' +
+          '<br>' +
+          '<button class="w3-button w3-green" id="AddNominationbtn">Add Nomination</button>' +
+          '<br>' +
+          '<button class="w3-button w3-blue" id="voteBtn" disabled>Vote</button>' +
+          '<br>' +
+          '<button class="w3-button w3-black" id="beginVotingBtn" disabled>Begin Voting</button>';
+          const movieName = document.getElementById('movieName');
+          const addNombtn = document.getElementById('AddNominationbtn');
+          const beginVotingBtn = document.getElementById('beginVotingBtn');
+          addNombtn.addEventListener('click', e => {
+            if (movieName.value == '') {
+              alert("Please enter a movie name")
             }
-            socket.emit('add-movie', movieData);
-          }
-        })
-        beginVotingBtn.addEventListener('click', e => {
-          socket.emit('begin-vote', process.env.EMAIL);
-        })
-      }
-    });   
+            else {
+              var movieData = {
+                name: movieName,
+                email: user.email,
+                uid: user.uid
+              }
+              socket.emit('add-movie', movieData);
+            }
+          })
+          beginVotingBtn.addEventListener('click', e => {
+            socket.emit('begin-vote', user.email);
+          })
+        }
+      }); 
+    } else {
+      window.location.href = "../index.html"
+    }
+  });  
 });
 //Movie Nomination Added Response
 socket.on('add-movie-response', data => {
@@ -319,19 +382,34 @@ socket.on('add-movie-response', data => {
 });
 //Update Movie Nominations List
 socket.on('new-movie-nomination', data => {
+  console.log("New Nomination Added");
   const nominationList = document.getElementById('nominationList');
-  nominationList.innerHTML += 
-    '<br>' +
-    '<h3 class="w3-center" style="font-size: 16px;">' + data + '</h3>';
+  const voteModalbody = document.getElementById("voteModalbody");
+  const beginVotingBtn = document.getElementById('beginVotingBtn');
+  nominationList.innerHTML == '';
+  voteModalbody.innerHTML == '';
+  for (var [key, value] of data) {
+    nominationList.innerHTML += 
+      '<br>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + key + ': ' + ' Votes: ' + value + '</h3>' +
+      '<br>';
+    voteModalbody.innerHTML =+
+      '<br>' +
+      '<label>' + key + ' </label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ key + '">';
+  }
+  beginVotingBtn.disabled = false;
 });
 //Start Movie Polling
 socket.on('voting-started', data => {
-  const nominationList = document.getElementById('nominationList');
-  //TODO
+  const beginVotingBtn = document.getElementById('beginVotingBtn');
+  const voteBtn = document.getElementById('voteBtn');
+  beginVotingBtn.disabled = true;
+  voteBtn.disabled = false;
 })
 //Create/Begin Game Poll
 socket.on('new-game-poll', data => {
-  activepollbody.innerHTML = 
+  currentPollbody.innerHTML = 
   '<div class="w3-center">' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
@@ -344,49 +422,66 @@ socket.on('new-game-poll', data => {
   '</div>';
   const memberBtns = document.getElementById("memberBtns");
   const nominationList = document.getElementById("nominationList");
+  const voteModalbody = document.getElementById("voteModalbody");
   for (var [key, value] of data.nominations) {
     nominationList.innerHTML += 
       '<br>' +
-      '<label>' + key + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="' + key + '">' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + key + ': ' + ' Votes: ' + value + '</h3>' +
       '<br>';
+    voteModalbody.innerHTML =+
+      '<br>' +
+      '<label>' + key + ' </label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ key + '">';
   }
-  checkUser({email: process.env.EMAIL, uid: process.env.UID})
-    .then((result) => {
-      /** @type {any} */
-      const data = result.data;
-      if (data.isMember) {
-        memberBtns.innerHTML = 
-            '<label><b>Movie Name</b></label>' +
-            '<input class="w3-input w3-border" type="text" id="movieName">' +
-            '<br>' +
-            '<button class="w3-button w3-green" id="submitVoteBtn">Submit Vote</button>';
-            const submitVoteBtn = document.getElementById('submitVoteBtn');
-            submitVoteBtn.addEventListener('click', e => {
-              var voteData = {
-                email: process.env.EMAIL,
-                uid: process.env.UID,
-                votes: []
-              }
-              const voteCheck = document.getElementsByName("voteCheck");
-              for (var i = 0; i < voteCheck.length; i++) {
-                if (voteCheck[i].checked) {
-                  voteData.votes.push(voteCheck.value);
-                }
-              }
-              socket.emit('vote', voteData);
-            })
-      }
-    });
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("Logged in as " + user.email)
+      checkUser()
+        .then((result) => {
+          /** @type {any} */
+          const data = result.data;
+          if (data.isMember) {
+            memberBtns.innerHTML = 
+              '<br>' +
+              '<button class="w3-button w3-blue" id="voteBtn">Vote</button>';
+            const voteBtn = document.getElementById('voteBtn');
+            voteBtn.addEventListener('click', e => {
+              document.getElementById('voteModal').style.display='block';
+            });
+          }
+        });
+    } else {
+      window.location.href = "../index.html"
+    }
+  });
+  
 });
+//Response from Vote Submission
 socket.on('vote-response', data => {
   if (data == "ERROR-1") {
     alert("Error - you have already voted in this poll");
   }
   else if (data == "OK") {
-    //TODO
+    alert("Vote Successfully Submitted!");
   }
 });
+//Update Poll
+socket.on('update-poll', data => {
+  const voteCount = document.getElementById("voteCount");
+  const nominationList = document.getElementById("nominationList");
+  voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
+  nominationList.innerHTML = '';
+  for (var [key, value] of data.nominations) {
+    nominationList.innerHTML += 
+      '<br>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + key + ': ' + ' Votes: ' + value + '</h3>' +
+      '<br>';
+  }
+});
+
+socket.on('error', data => {
+  console.error(data);
+})
 
 moviesbtn.addEventListener('click', e=> { 
     window.location.href = "../Movies/movies.html"
@@ -397,6 +492,3 @@ gamesbtn.addEventListener('click', e=> {
 recommendbtn.addEventListener('click', e=> { 
     window.location.href = "../Recommend/recommend.html"
 })
-
-
-

@@ -8,8 +8,8 @@ initializeApp();
 
 exports.checkUser = onCall((request) => {
     return new Promise(function(resolve) {
-        const uid = request.data.uid;
-        const email = request.data.email;
+        const uid = request.auth.uid;
+        const email = request.auth.token.email;
         getFirestore().collection('members').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 logger.log("Doc Data: " + doc.data().uid + " " + doc.data().email)

@@ -27,48 +27,63 @@ homeNamespace.on('connection', socket => {
         }
     }
     socket.on('create-movie-poll', data => {
-        var votesMap = new Map();
-        nominatorTrack = new Map();
-        voterTrack = [];
-        activePoll = {
-            activity: 'movie',
-            maxVotes: data.numVoters,
-            totalVotes: 0,
-            nominations: votesMap,
-            nominatorList: [],
-            runoffPoll: null
-        };
-        homeNamespace.emit('new-movie-poll', activePoll);
+        if (activePoll != null) {
+            socket.emit('error', "Active Poll is not null");
+        }
+        else {
+            var votesMap = new Map();
+            nominatorTrack = new Map();
+            voterTrack = [];
+            activePoll = {
+                activity: 'movie',
+                maxVotes: data.numVoters,
+                totalVotes: 0,
+                nominations: votesMap,
+                nominatorList: [],
+                runoffPoll: null
+            };
+            homeNamespace.emit('new-movie-poll', activePoll);
+        }
     });
     socket.on('create-game-poll', data => {
-        var votesMap = new Map();
-        voterTrack = [];
-        data.nominations.forEach(name => {
-            votesMap.set(name, 0);
-        });
-        activePoll = {
-            activity: 'game',
-            maxVotes: data.numVoters,
-            totalVotes: 0,
-            nominations: votesMap
-        };
-        homeNamespace.emit('new-game-poll', activePoll);
+        if (activePoll != null) {
+            socket.emit('error', "Active Poll is not null");
+        }
+        else {
+            var votesMap = new Map();
+            voterTrack = [];
+            data.nominations.forEach(name => {
+                votesMap.set(name, 0);
+            });
+            activePoll = {
+                activity: 'game',
+                maxVotes: data.numVoters,
+                totalVotes: 0,
+                nominations: votesMap
+            };
+            homeNamespace.emit('new-game-poll', activePoll);
+        }
     });
     socket.on('add-movie', data => {
-        activePoll.votesMap.set(data.name, 0);
         if (nominatorTrack.has(data.uid)) {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else {
             nominatorTrack.set(data.uid, data.email);
             activePoll.nominatorList.push(data.email);
-            homeNamespace.emit('new-movie-nomination', data.name);
+            activePoll.nominations.set(data.name, 0);
+            homeNamespace.emit('new-movie-nomination', activePoll.nominations.size);
             socket.emit('add-movie-response', "OK"); 
         }
     });
     socket.on('begin-vote', data => {
-        console.log(data + " Began Voting");
-        homeNamespace.emit('voting-started', activePoll)
+        if (activePoll.nominations.size == 0) {
+            socket.emit('voting-started', "ERROR-1");
+        }
+        else {
+            console.log(data + " Began Voting");
+            homeNamespace.emit('voting-started', activePoll);
+        }
     })
     socket.on('vote', data => {
         if (voterTrack.includes(data.email)) {
@@ -86,6 +101,7 @@ homeNamespace.on('connection', socket => {
             });
             activePoll.totalVotes++;
             socket.emit('vote-response', "OK");
+            homeNamespace.emit('update-poll', activePoll)
         }
     })
 })

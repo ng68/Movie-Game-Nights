@@ -65,6 +65,25 @@
         </div>
       </div>
 
+      <div id="voteModal" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-top">
+          <header class="w3-container w3-theme-l4 w3-center"> 
+            <span onclick="document.getElementById('voteModal').style.display='none'"
+            class="w3-button w3-display-topright">×</span>
+            <br>
+          </header>
+          <div id="voteModalbody" class="w3-container w3-theme-l2">
+                
+          </div>
+          <footer class="w3-container w3-theme-l3 w3-center">
+            <br>
+            <div class="w3-margin-bottom">
+              <button id="submitVoteBtn" class="w3-button w3-indigo w3-hover-blue w3-center" disabled><i class="fa fa-paper-plane"></i> Submit Vote</button>
+            </div>
+          </footer>
+        </div>
+      </div>
+
       <div class="w3-container w3-content" style="max-width:1500px;margin-top:80px">    
         <!-- The Grid -->
         <div class="w3-row">
@@ -119,8 +138,6 @@
                     <h1>Current Poll</h1>
                     <hr>
                     <div id="currentPollbody">
-                      <div class="w3-bar" id="memberCreate"> 
-                      </div>
                     </div>
                   </div>
                 </div>
