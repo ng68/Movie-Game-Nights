@@ -10,12 +10,14 @@ const io = new Server(port, {
 });
 
 const homeNamespace = io.of('/home');
-const recommendNamespace = io.of('/recommend');
 
-var activePoll = null; 
+var activePoll = null;
+var nominatorTrack = null;
+var voterTrack = null; 
 
 homeNamespace.on('connection', socket => {
     console.log("homepage connected");
+    //Send Active Poll to newly connected User
     if(activePoll != null) {
         if(activePoll.activity == 'movie') {
             socket.emit('new-movie-poll', activePoll)
@@ -26,16 +28,21 @@ homeNamespace.on('connection', socket => {
     }
     socket.on('create-movie-poll', data => {
         var votesMap = new Map();
+        nominatorTrack = new Map();
+        voterTrack = [];
         activePoll = {
             activity: 'movie',
             maxVotes: data.numVoters,
             totalVotes: 0,
-            nominations: votesMap
+            nominations: votesMap,
+            nominatorList: [],
+            runoffPoll: null
         };
         homeNamespace.emit('new-movie-poll', activePoll);
     });
     socket.on('create-game-poll', data => {
         var votesMap = new Map();
+        voterTrack = [];
         data.nominations.forEach(name => {
             votesMap.set(name, 0);
         });
@@ -44,12 +51,41 @@ homeNamespace.on('connection', socket => {
             maxVotes: data.numVoters,
             totalVotes: 0,
             nominations: votesMap
+        };
+        homeNamespace.emit('new-game-poll', activePoll);
+    });
+    socket.on('add-movie', data => {
+        activePoll.votesMap.set(data.name, 0);
+        if (nominatorTrack.has(data.uid)) {
+            socket.emit('add-movie-response', "ERROR-1");
+        }
+        else {
+            nominatorTrack.set(data.uid, data.email);
+            activePoll.nominatorList.push(data.email);
+            homeNamespace.emit('new-movie-nomination', data.name);
+            socket.emit('add-movie-response', "OK"); 
+        }
+    });
+    socket.on('begin-vote', data => {
+        console.log(data + " Began Voting");
+        homeNamespace.emit('voting-started', activePoll)
+    })
+    socket.on('vote', data => {
+        if (voterTrack.includes(data.email)) {
+            socket.emit('vote-response', "ERROR-1");
+        }
+        else {
+            voterTrack.push(data.email);
+            data.votes.forEach(vote => {
+                for (var [key, value] of activePoll.votesMap) {
+                    if (vote == key) {
+                        value++;
+                        break;
+                    }
+                }
+            });
+            activePoll.totalVotes++;
+            socket.emit('vote-response', "OK");
         }
     })
-    socket.on('add-movie', data => {
-        activePoll.votesMap.set(data, 0);
-        homeNamespace.emit('new-nomination', activePoll);
-        socket.emit('add-movie-response', "OK");
-    });
-
 })
