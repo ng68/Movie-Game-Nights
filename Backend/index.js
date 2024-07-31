@@ -18,14 +18,14 @@ var voterTrack = [];
 homeNamespace.on('connection', socket => {
     console.log("homepage connected");
     //Send Active Poll to newly connected User
-    if(activePoll != null) {
+    socket.on('request-poll', data => {
         if(activePoll.activity == 'movie') {
-            socket.emit('new-movie-poll', activePoll)
+            socket.emit("new-movie-poll", activePoll);
         }
         else if(activePoll.activity == 'game') {
-            socket.emit('new-game-poll', activePoll)
+            socket.emit("new-game-poll", activePoll);
         }
-    }
+    })
     socket.on('create-movie-poll', data => {
         if (activePoll != null) {
             socket.emit('error', "Active Poll is not null");
@@ -34,6 +34,7 @@ homeNamespace.on('connection', socket => {
             var votesMap = new Map();
             nominatorTrack = new Map();
             voterTrack = [];
+            nominatorTrack = [];
             activePoll = {
                 activity: 'movie',
                 maxVotes: data.maxVotes,
@@ -69,9 +70,8 @@ homeNamespace.on('connection', socket => {
         }
         else {
             nominatorTrack.set(data.uid, data.email);
-            activePoll.nominatorList.push(data.email);
             activePoll.nominations.set(data.name, 0);
-            homeNamespace.emit('new-movie-nomination', activePoll.nominations.size);
+            homeNamespace.emit('new-movie-nomination', activePoll.nominations);
             socket.emit('add-movie-response', "OK"); 
         }
     });

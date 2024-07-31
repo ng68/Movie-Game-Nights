@@ -56,6 +56,7 @@ onAuthStateChanged(auth, (user) => {
             '</div>';
         }
       });
+    socket.emit('request-poll');
   } else {
     alert("User is not logged in");
     window.location.href = "../index.html";
