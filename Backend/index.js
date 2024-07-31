@@ -68,7 +68,7 @@ homeNamespace.on('connection', socket => {
         }
     });
     socket.on('add-movie', data => {
-        if (nominatorTrack.has(data.uid)) {
+        if (nominatorTrack.includes(data.uid)) {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else {
