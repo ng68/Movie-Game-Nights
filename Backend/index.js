@@ -19,7 +19,10 @@ homeNamespace.on('connection', socket => {
     console.log("homepage connected");
     //Send Active Poll to newly connected User
     socket.on('request-poll', data => {
-        if(activePoll.activity == 'movie') {
+        if(activePoll == null) {
+            socket.emit("poll-response", "No active poll found");
+        }
+        else if(activePoll.activity == 'movie') {
             socket.emit("new-movie-poll", activePoll);
         }
         else if(activePoll.activity == 'game') {

@@ -63,6 +63,10 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+socket.on("poll-response", data => {
+  console.log(data);
+})
+
 function toggleDropdown() {
   const x = document.getElementById("activitydropdown") 
   if (x.className.indexOf("w3-show") == -1) { 
