@@ -52,14 +52,15 @@ homeNamespace.on('connection', socket => {
         }
         else {
             voterTrack = [];
+            var votesMap = [];
             data.nominations.forEach(name => {
-                votesMap.set(name, 0);
+                votesMap.push([name, 0]);
             });
             activePoll = {
                 activity: 'game',
                 maxVotes: data.numVoters,
                 totalVotes: 0,
-                nominationsMap: []
+                nominationsMap: votesMap
             };
             homeNamespace.emit('new-game-poll', activePoll);
         }
@@ -72,12 +73,12 @@ homeNamespace.on('connection', socket => {
             nominatorTrack.push(data.uid);
             var newNom = [data.name, 0]
             activePoll.nominationsMap.push(newNom);
-            homeNamespace.emit('new-movie-nomination', activePoll.nominationsMap);
+            homeNamespace.emit('new-movie-nomination', activePoll);
             socket.emit('add-movie-response', "OK"); 
         }
     });
     socket.on('begin-vote', data => {
-        if (activePoll.nominations.size == 0) {
+        if (activePoll.nominationsMap.size == 0) {
             socket.emit('voting-started', "ERROR-1");
         }
         else {

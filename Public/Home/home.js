@@ -400,12 +400,12 @@ socket.on('new-movie-nomination', data => {
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationsMap[i][0] + ': ' + ' Votes: ' + nominationsMap[i][1] + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
     voteModalbody.innerHTML =+
       '<br>' +
-      '<label>' + nominationsMap[i][0] + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ nominationsMap[i][0] + '">';
+      '<label>' + data.nominationsMap[i][0] + ' </label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">';
   }
   beginVotingBtn.disabled = false;
 });
@@ -481,7 +481,7 @@ socket.on('update-poll', data => {
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationsMap[i][0] + ': ' + ' Votes: ' + nominationsMap[i][1] + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
   }
 });
