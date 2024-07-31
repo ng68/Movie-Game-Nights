@@ -35,9 +35,8 @@ homeNamespace.on('connection', socket => {
         }
         else {
             var votesMap = new Map();
-            nominatorTrack = new Map();
-            voterTrack = [];
             nominatorTrack = [];
+            voterTrack = [];
             activePoll = {
                 activity: 'movie',
                 maxVotes: data.maxVotes,
@@ -72,7 +71,7 @@ homeNamespace.on('connection', socket => {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else {
-            nominatorTrack.set(data.uid, data.email);
+            nominatorTrack.push(data.uid);
             activePoll.nominations.set(data.name, 0);
             homeNamespace.emit('new-movie-nomination', activePoll.nominations);
             socket.emit('add-movie-response', "OK"); 
@@ -88,11 +87,11 @@ homeNamespace.on('connection', socket => {
         }
     })
     socket.on('vote', data => {
-        if (voterTrack.includes(data.email)) {
+        if (voterTrack.includes(data.uid)) {
             socket.emit('vote-response', "ERROR-1");
         }
         else {
-            voterTrack.push(data.email);
+            voterTrack.push(data.uid);
             data.votes.forEach(vote => {
                 for (var [key, value] of activePoll.votesMap) {
                     if (vote == key) {
