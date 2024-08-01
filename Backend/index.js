@@ -37,12 +37,14 @@ homeNamespace.on('connection', socket => {
         }
         else if(activePoll.activity == 'movie') {
             socket.emit("new-movie-poll", activePoll);
+            socket.emit("update-poll", activePoll);
             if (activePoll.open == true) {
                 socket.emit('voting-started', "Voting has been opened!");
             }
         }
         else if(activePoll.activity == 'game') {
             socket.emit("new-game-poll", activePoll);
+            socket.emit("update-poll", activePoll);
         }
     })
     socket.on('create-movie-poll', data => {

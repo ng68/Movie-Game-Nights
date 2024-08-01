@@ -186,7 +186,7 @@ function changeActivity(activity) {
         }
         else {
           gamechecklist.innerHTML = gamechecklist.innerHTML + 
-          '<input class="w3-check" checked="checked" type="checkbox" name="gamecheck" value="' + gameName.value + '">' +
+          '<input class="w3-check" checked="checked" type="checkbox" name="gamecheck" value=\"' + gameName.value + '\">' +
           '<label> ' + gameName.value + '</label>' +
           '<br>';
           gameName.value = ''
@@ -415,13 +415,15 @@ socket.on('new-movie-nomination', data => {
   voteModalbody.innerHTML = '';
   for (var i = 0; i < data.nominationsMap.length; i++) {
     console.log("New Nomination: " + data.nominationsMap[i][0])
+    const nominationName = data.nominationsMap[i][0];
+    const votes = data.nominationsMap[i][1];
     nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ' - ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' - ' + ' Votes: ' + votes + '</h3>' +
       '<br>';
-    voteModalbody.innerHTML =+
+    voteModalbody.innerHTML +=
       '<br>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">' +
-      '<label>' + data.nominationsMap[i][0] + '</label>' +
+      '<label>' + nominationName + '</label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
       '<br>';
   }
   beginVotingBtn.disabled = false;
