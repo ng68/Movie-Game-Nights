@@ -38,11 +38,10 @@ homeNamespace.on('connection', socket => {
         else if(activePoll.activity == 'movie') {
             socket.emit("new-movie-poll", activePoll);
             if (activePoll.nominationsMap.length != 0) {
-                socket.emit("new-movie-nomination", activePoll);
+                setTimeout (() => {socket.emit('new-movie-nomination', activePoll);}, 1500);  
             }
             if (activePoll.open == true) {
-                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 2000);
-                
+                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 1500);   
             }
         }
         else if(activePoll.activity == 'game') {
