@@ -109,14 +109,14 @@ function changeActivity(activity) {
       '<p><label><i class="fa fa-male"></i> Number of Voters</label></p>' +
       '<select id="numMovieVoters" class="w3-select w3-border" name="Voters">' +
         '<option value="" disabled selected>0</option>' +
-        '<option value="1">1</option>' +
-        '<option value="2">2</option>' +
-        '<option value="3">3</option>' +
-        '<option value="4">4</option>' +
-        '<option value="5">5</option>' +
-        '<option value="6">6</option>' +
-        '<option value="7">7</option>' +
-        '<option value="8">8</option>' +
+        '<option value=1>1</option>' +
+        '<option value=2>2</option>' +
+        '<option value=3>3</option>' +
+        '<option value=4>4</option>' +
+        '<option value=5>5</option>' +
+        '<option value=6>6</option>' +
+        '<option value=7>7</option>' +
+        '<option value=8>8</option>' +
       '</select>' +
       '<br>' +
       '<br>';
@@ -324,7 +324,7 @@ function sendVote() {
 socket.on('new-movie-poll', data => {
   currentPollbody.innerHTML = 
   '<div class="w3-center">' +
-    '<h3 class="w3-center" style="font-size: 24px;">Game Night - ' + data.date + '</h3>' +
+    '<h3 class="w3-center" style="font-size: 24px;">Movie Night - ' + data.date + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
@@ -414,6 +414,7 @@ socket.on('new-movie-nomination', data => {
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '';
   for (var i = 0; i < data.nominationsMap.length; i++) {
+    console.log("New Nomination: " + data.nominationsMap[i][0])
     nominationList.innerHTML += 
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ' - ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';

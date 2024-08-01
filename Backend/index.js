@@ -89,6 +89,7 @@ homeNamespace.on('connection', socket => {
         }
         else {
             nominatorTrack.push(data.uid);
+            console.log("New Movie Added: " + data.name);
             var newNom = [data.name, 0]
             activePoll.nominationsMap.push(newNom);
             homeNamespace.emit('new-movie-nomination', activePoll);
