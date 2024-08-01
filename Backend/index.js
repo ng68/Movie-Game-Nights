@@ -37,6 +37,9 @@ homeNamespace.on('connection', socket => {
         }
         else if(activePoll.activity == 'movie') {
             socket.emit("new-movie-poll", activePoll);
+            if (activePoll.open == true) {
+                socket.emit('voting-started', "Voting has been opened!");
+            }
         }
         else if(activePoll.activity == 'game') {
             socket.emit("new-game-poll", activePoll);
@@ -55,6 +58,7 @@ homeNamespace.on('connection', socket => {
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
                 nominationsMap: [],
+                open: false,
                 runoffPoll: null
             };
             homeNamespace.emit('new-movie-poll', activePoll);
@@ -101,6 +105,7 @@ homeNamespace.on('connection', socket => {
             socket.emit('voting-started', "ERROR-1");
         }
         else {
+            activePoll.open = true;
             console.log(data + " Initiated Voting");
             homeNamespace.emit('voting-started', "Voting has been opened!" );
         }

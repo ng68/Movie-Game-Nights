@@ -420,8 +420,8 @@ socket.on('new-movie-nomination', data => {
       '<br>';
     voteModalbody.innerHTML =+
       '<br>' +
-      '<label>' + data.nominationsMap[i][0] + '</label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">' +
+      '<label>' + data.nominationsMap[i][0] + '</label>' +
       '<br>';
   }
   beginVotingBtn.disabled = false;
