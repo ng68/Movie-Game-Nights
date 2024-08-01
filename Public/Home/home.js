@@ -243,7 +243,6 @@ function startPoll() {
               uid: user.uid,
               maxVotes: numVoters
             };
-            console.log("Sending Poll Data...");
             socket.emit('create-movie-poll', pollData)
             document.getElementById('newpoll').style.display='none'
           }
@@ -426,7 +425,6 @@ socket.on('new-movie-nomination', data => {
 });
 //Start Movie Polling
 socket.on('voting-started', data => {
-  alert(data);
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   const voteBtn = document.getElementById('voteBtn');
   voteBtn.addEventListener('click', e => {
@@ -434,6 +432,7 @@ socket.on('voting-started', data => {
   });
   beginVotingBtn.disabled = true;
   voteBtn.disabled = false;
+  alert(data);
 })
 //Create/Begin Game Poll
 socket.on('new-game-poll', data => {
