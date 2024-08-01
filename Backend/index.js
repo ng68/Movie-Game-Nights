@@ -37,7 +37,9 @@ homeNamespace.on('connection', socket => {
         }
         else if(activePoll.activity == 'movie') {
             socket.emit("new-movie-poll", activePoll);
-            socket.emit("update-poll", activePoll);
+            if (activePoll.nominationsMap.length != 0) {
+                socket.emit("new-movie-nomination", activePoll);
+            }
             if (activePoll.open == true) {
                 socket.emit('voting-started', "Voting has been opened!");
             }

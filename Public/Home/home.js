@@ -233,7 +233,6 @@ function startPoll() {
     numVoters = document.getElementById('numMovieVoters').selectedIndex
     const user = auth.currentUser;
     if (user) {
-      console.log("Logged in as " + user.email)
       checkUser()
         .then((result) => {
           /** @type {any} */
@@ -266,7 +265,6 @@ function startPoll() {
     }
     const user = auth.currentUser;
     if (user) {
-      console.log("Logged in as " + user.email)
       checkUser()
         .then((result) => {
           /** @type {any} */
@@ -329,7 +327,7 @@ socket.on('new-movie-poll', data => {
     '<h3 class="w3-center" style="font-size: 16px;">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
   '<hr>' + 
-  '<h3 class="w3-center" style="font-size: 20px;">Nominations</h3>' +
+  '<h3 class="w3-center" style="font-size: 20px;">Nominations List:</h3>' +
   '<div class="w3-center" id="nominationList">' +
   '</div>' +
   '<hr>' +
@@ -407,14 +405,12 @@ socket.on('add-movie-response', data => {
 });
 //Update Movie Nominations List
 socket.on('new-movie-nomination', data => {
-  console.log("New Nomination Added");
   const nominationList = document.getElementById('nominationList');
   const voteModalbody = document.getElementById("voteModalbody");
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '';
   for (var i = 0; i < data.nominationsMap.length; i++) {
-    console.log("New Nomination: " + data.nominationsMap[i][0])
     const nominationName = data.nominationsMap[i][0];
     const votes = data.nominationsMap[i][1];
     nominationList.innerHTML += 
@@ -422,7 +418,7 @@ socket.on('new-movie-nomination', data => {
       '<br>';
     voteModalbody.innerHTML +=
       '<br>' +
-      '<label>' + nominationName + '</label>' +
+      '<label>' + nominationName + ' </label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
       '<br>';
   }
@@ -447,7 +443,7 @@ socket.on('new-game-poll', data => {
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
-  '<h3 class="w3-center" style="font-size: 20px;">Nominations</h3>' +
+  '<h3 class="w3-center" style="font-size: 20px;">Nominations List</h3>' +
   '<div class="w3-center" id="nominationList">' +
   '</div>' +
   '<hr>' +
@@ -464,7 +460,8 @@ socket.on('new-game-poll', data => {
     voteModalbody.innerHTML =+
       '<br>' +
       '<label>' + data.nominationsMap[i][0] + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">';
+      '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">' + 
+      '<br>';
   }
   const user = auth.currentUser;
   if (user) {
