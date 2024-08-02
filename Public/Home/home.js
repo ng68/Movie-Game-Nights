@@ -611,13 +611,16 @@ socket.on('poll-results', data => {
       '<h3 class="w3-center" style="font-size: 20px;">Runoff Poll</h3>' +
       '<div class="w3-center" id="runoffList">' +
       '</div>';
+      const runoffList = document.getElementById("runoffList");
+      for (var i = 0; i < data.runoffPoll.length; i++) {
+        runoffList.innerHTML += 
+        '<h3 class="w3-center" style="font-size: 16px;">' + data.runoffPoll[i][0] + ': ' + ' Votes: ' + data.runoffPoll[i][1] + '</h3>' +
+        '<br>';
+      }
     }
-    const runoffList = document.getElementById("runoffList");
-    for (var i = 0; i < data.runoffPoll.length; i++) {
-      runoffList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + data.runoffPoll[i][0] + ': ' + ' Votes: ' + data.runoffPoll[i][1] + '</h3>' +
-      '<br>';
-    }
+    pollResultsbody.innerHTML += 
+      '<hr>' + 
+      '<h3 class="w3-center" style="font-size: 20px;">Winner: ' + data.winner + '</h3>';
   }
 })
 

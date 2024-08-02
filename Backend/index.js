@@ -54,7 +54,8 @@ homeNamespace.on('connection', socket => {
                 totalVotes: 0,
                 nominationsMap: [],
                 open: false,
-                runoffPoll: []
+                runoffPoll: [],
+                winner: ''
             };
             homeNamespace.emit('new-movie-poll', activePoll);
         }
@@ -199,7 +200,7 @@ homeNamespace.on('connection', socket => {
                 }
                 if (tie.length != 0) {
                     tie.push(topVote[0]);
-                    const winner = tie[getRandomInt(tie.length)];
+                    activePoll.winner = tie[getRandomInt(tie.length)];
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
                 }
