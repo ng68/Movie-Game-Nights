@@ -122,8 +122,11 @@ homeNamespace.on('connection', socket => {
             voterTrack.push(data.uid);
             data.votes.forEach(vote => {
                 for (var i = 0; i < activePoll.nominationsMap.length; i++) {
+                    var name = activePoll.nominationsMap[i][0];
                     var count = activePoll.nominationsMap[i][1];
-                    if (activePoll.nominationsMap[i][0] == vote) {
+                    console.log("Voted For: " + vote)
+                    console.log("Adding vote to: " + name)
+                    if (name == vote) {
                         console.log("Vote Counted")
                         count++;
                         activePoll.nominationsMap[i][1] = count;
@@ -133,7 +136,13 @@ homeNamespace.on('connection', socket => {
             });
             activePoll.totalVotes++;
             socket.emit('vote-response', "OK");
-            homeNamespace.emit('update-poll', activePoll)
+            if (activePoll.totalVotes == activePoll.maxVotes) {
+                //Send Results
+            }
+            else {
+                homeNamespace.emit('update-count', activePoll)
+            }
+            
         }
     })
 })
