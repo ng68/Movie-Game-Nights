@@ -26,7 +26,7 @@ homeNamespace.on('connection', socket => {
         if(activePoll == null) {
             socket.emit("poll-response", "No active poll found");
         }
-        else if(activePoll.activity == 'movie') {
+        else if(activePoll.activity == 'Movie') {
             socket.emit("new-movie-poll", activePoll);
             if (activePoll.nominationsMap.length != 0) {
                 setTimeout (() => {socket.emit('new-movie-nomination', activePoll);}, 1500);  
@@ -35,7 +35,7 @@ homeNamespace.on('connection', socket => {
                 setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 1500);   
             }
         }
-        else if(activePoll.activity == 'game') {
+        else if(activePoll.activity == 'Game') {
             socket.emit("new-game-poll", activePoll);
         }
     })
@@ -49,7 +49,7 @@ homeNamespace.on('connection', socket => {
             activePoll = {
                 //Central Time
                 date: (Date.now() - (1000 * 60 * 60 * 5)),
-                activity: 'movie',
+                activity: 'Movie',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
                 nominationsMap: [],
@@ -72,7 +72,7 @@ homeNamespace.on('connection', socket => {
             activePoll = {
                 //Central Time
                 date: (Date.now() - (1000 * 60 * 60 * 5)),
-                activity: 'game',
+                activity: 'Game',
                 maxVotes: data.numVoters,
                 totalVotes: 0,
                 nominationsMap: votesMap
@@ -128,7 +128,7 @@ homeNamespace.on('connection', socket => {
                 //Calculate Vote Winner
                 var topVote = ["", 0];
                 const voteMap = activePoll.nominationsMap
-                if (activePoll.activity == 'movie') {
+                if (activePoll.activity == 'Movie') {
                     for (var i = 0; i < voteMap.length; i++) {
                         if (voteMap[i][1] > topVote[1]) {
                             topVote = voteMap[i];
@@ -153,13 +153,13 @@ homeNamespace.on('connection', socket => {
                         voterTrack = [];
                         activePoll.winner = topVote[0];
                         setTimeout (() => {homeNamespace.emit('poll-results', activePoll);}, 1500);
-                        setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                        //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
                     }
                 }
                 else {
                     voterTrack = [];
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
-                    setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                    //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
                 }
             }
         }
@@ -200,10 +200,12 @@ homeNamespace.on('connection', socket => {
                 if (tie.length != 0) {
                     tie.push(topVote[0]);
                     const winner = tie[getRandomInt(tie.length)];
-                    setTimeout (() => {homeNamespace.emit('winner', winner);}, 1500);
+                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
+                    //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
                 }
                 else {
-                    setTimeout (() => {homeNamespace.emit('winner', topVote[0]);}, 1500);
+                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
+                    //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
                 }
             }
         }

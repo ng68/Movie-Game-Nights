@@ -373,14 +373,7 @@ socket.on('new-movie-poll', data => {
   '<div class="w3-center" id="memberBtns">' +
   '</div>';
   const voteModalheader = document.getElementById("voteModalHeader");
-  if (data.activity == 'movie') {
-    voteModalheader.innerHTML = 
-    '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
-  }
-  else if (data.activity == 'game') {
-    voteModalheader.innerHTML = 
-    '<h3 class="w3-center" style="font-size: 20px;">Game Night - ' + getDate(data.date) + '</h3>'
-  }
+  voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
   const memberBtns = document.getElementById("memberBtns");
   const user = auth.currentUser;
   if (user) {
@@ -489,6 +482,7 @@ socket.on('new-game-poll', data => {
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
+  '<hr>' + 
   '<h3 class="w3-center" style="font-size: 20px;">Nominations List</h3>' +
   '<div class="w3-center" id="nominationList">' +
   '</div>' +
@@ -497,10 +491,11 @@ socket.on('new-game-poll', data => {
   '</div>';
   const memberBtns = document.getElementById("memberBtns");
   const nominationList = document.getElementById("nominationList");
+  const voteModalheader = document.getElementById("voteModalHeader");
+  voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Game Night - ' + getDate(data.date) + '</h3>'
   const voteModalbody = document.getElementById("voteModalbody");
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
-      '<br>' +
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
     voteModalbody.innerHTML +=
@@ -575,6 +570,55 @@ socket.on('runoff-poll', data => {
   }
   alert("We have a tie! Runoff Poll has been opened!");
   voteBtn.disabled = false;
+})
+socket.on('poll-results', data => {
+  const currentPollbody = document.getElementById("currentPollbody");
+  const pollResultsbody = document.getElementById("pollResultsbody");
+  const user = auth.currentUser;
+  if (user) {
+    checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          console.log("Verified as Member")
+          currentPollbody.innerHTML = 
+            '<div class="w3-bar">' + 
+              '<button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById(\'newpoll\').style.display=\'block\'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button>' +
+            '</div>';
+        }
+      });
+  }
+  pollResultsbody.innerHTML = 
+    '<div class="w3-center">' +
+    '<h3 class="w3-center" style="font-size: 24px;">' + data.activity + ' Night - ' + getDate(data.date) + '</h3>' +
+    '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
+    '</div>' +
+    '<hr>' + 
+    '<h3 class="w3-center" style="font-size: 20px;">Nominations List</h3>' +
+    '<div class="w3-center" id="nominationList">' +
+    '</div>';
+  const nominationList = document.getElementById("nominationList");
+  for (var i = 0; i < data.nominationsMap.length; i++) {
+    nominationList.innerHTML += 
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
+      '<br>';
+  }
+  if (data.activity == 'Movie') {
+    if(data.runoffPoll.length != 0) {
+      pollResultsbody.innerHTML += 
+      '<hr>' + 
+      '<h3 class="w3-center" style="font-size: 20px;">Runoff Poll</h3>' +
+      '<div class="w3-center" id="runoffList">' +
+      '</div>';
+    }
+    const runoffList = document.getElementById("runoffList");
+    for (var i = 0; i < data.runoffPoll.length; i++) {
+      runoffList.innerHTML += 
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.runoffPoll[i][0] + ': ' + ' Votes: ' + data.runoffPoll[i][1] + '</h3>' +
+      '<br>';
+    }
+  }
 })
 
 socket.on('error', data => {
