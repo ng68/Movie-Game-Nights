@@ -340,7 +340,7 @@ socket.on('new-movie-poll', data => {
   '<div class="w3-center">' +
     '<h3 class="w3-center" style="font-size: 24px;">Movie Night - ' + data.date + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
-    '<h3 class="w3-center" style="font-size: 16px;">Vote Count: ' + data.totalVotes + '</h3>' +
+    '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
   '<hr>' + 
   '<h3 class="w3-center" style="font-size: 20px;">Nominations List:</h3>' +
