@@ -315,9 +315,7 @@ function startPoll() {
   }
 }
 //Submit Vote
-const submitVoteBtn = document.getElementById("submitVoteBtn")
-submitVoteBtn.addEventListener('click', sendVote(false));
-function sendVote(isRunoff) {
+function sendVote() {
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -330,24 +328,42 @@ function sendVote(isRunoff) {
           uid: user.uid,
           votes: []
         }
-        if(!isRunoff) {
-          const voteCheck = document.getElementsByName("voteCheck");
-          for (var i = 0; i < voteCheck.length; i++) {
-            if (voteCheck[i].checked) {
-              voteData.votes.push(voteCheck[i].value);
-            }
+        const voteCheck = document.getElementsByName("voteCheck");
+        for (var i = 0; i < voteCheck.length; i++) {
+          if (voteCheck[i].checked) {
+            voteData.votes.push(voteCheck[i].value);
           }
-          socket.emit('vote', voteData);
         }
-        else if(isRunoff) {
-          const voteCheck = document.getElementsByName("runoffCheck");
-          for (var i = 0; i < voteCheck.length; i++) {
-            if (voteCheck[i].checked) {
-              voteData.votes.push(voteCheck[i].value);
-            }
+        socket.emit('vote', voteData);
+        document.getElementById('voteModal').style.display='none';
+      }
+    });
+  } else {
+    alert("User is not logged in");
+    window.location.href = "../index.html";
+  }
+}
+//Submit Runoff Vote
+function sendRunoffVote() {
+  const user = auth.currentUser;
+  if (user) {
+    checkUser()
+    .then((result) => {
+      /** @type {any} */
+      const data = result.data;
+      if (data.isMember) {
+        var voteData = {
+          email: user.email,
+          uid: user.uid,
+          votes: []
+        }
+        const voteCheck = document.getElementsByName("runoffCheck");
+        for (var i = 0; i < voteCheck.length; i++) {
+          if (voteCheck[i].checked) {
+            voteData.votes.push(voteCheck[i].value);
           }
-          socket.emit('runoff-vote', voteData);
         }
+        socket.emit('runoff-vote', voteData);
         document.getElementById('voteModal').style.display='none';
       }
     });
@@ -375,6 +391,8 @@ socket.on('new-movie-poll', data => {
   const voteModalheader = document.getElementById("voteModalHeader");
   voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
   const memberBtns = document.getElementById("memberBtns");
+  const submitVoteBtn = document.getElementById("submitVoteBtn");
+  submitVoteBtn.addEventListener('click', sendVote);
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -556,8 +574,8 @@ socket.on('runoff-poll', data => {
   const voteModalbody = document.getElementById("voteModalbody");
   const voteBtn = document.getElementById('voteBtn');
   const submitVoteBtn = document.getElementById("submitVoteBtn")
-  submitVoteBtn.removeEventListener('click', sendVote(false));
-  submitVoteBtn.addEventListener('click', sendVote(true));
+  submitVoteBtn.removeEventListener('click', sendVote);
+  submitVoteBtn.addEventListener('click', sendRunoffVote);
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
   for (var i = 0; i < data.runoffPoll.length; i++) {
