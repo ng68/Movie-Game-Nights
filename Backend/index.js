@@ -122,8 +122,8 @@ homeNamespace.on('connection', socket => {
             voterTrack.push(data.uid);
             data.votes.forEach(vote => {
                 for (var i = 0; i < activePoll.nominationsMap.length; i++) {
-                    if (nominationsMap[i][0] == vote) {
-                        (nominationsMap[i][1])++;
+                    if (activePoll.nominationsMap[i][0] == vote) {
+                        (activePoll.nominationsMap[i][1])++;
                         break;
                     }
                 }

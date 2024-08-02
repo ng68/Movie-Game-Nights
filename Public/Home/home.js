@@ -224,6 +224,24 @@ function checkGameModal() {
     startpollbtn.disabled = true
   }
 }
+
+function checkVoteModal() {
+  const voteCheck = document.getElementsByName('voteCheck')
+  const submitVoteBtn = document.getElementById("submitVoteBtn")
+  var hasChecked = false
+  for (var i = 0; i < voteCheck.length; i++) {
+    if (voteCheck[i].checked) {
+      hasChecked = true
+      break;
+    }
+  }
+  if (hasChecked) {
+    submitVoteBtn.disabled = false
+  }
+  else {
+    submitVoteBtn.disabled = true
+  }
+}
 //Create Poll
 const startpollbtn = document.getElementById("startpollbtn")
 startpollbtn.addEventListener('click', startPoll);
@@ -288,7 +306,6 @@ function startPoll() {
 const submitVoteBtn = document.getElementById("submitVoteBtn")
 submitVoteBtn.addEventListener('click', sendVote);
 function sendVote() {
-  console.log("Sending Vote...");
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -389,8 +406,10 @@ socket.on('new-movie-poll', data => {
 //Movie Nomination Added Response
 socket.on('add-movie-response', data => {
   const addNombtn = document.getElementById('AddNominationbtn');
+  const movieName = document.getElementById('movieName');
+  movieName.value = '';
   if (data == "OK") {
-    alert("Movie Successfully Nominated!")
+    alert("Movie Successfully Nominated!");
     addNombtn.disabled = true;
   }
   else if (data == "ERROR-1") {
@@ -408,7 +427,7 @@ socket.on('new-movie-nomination', data => {
   const voteModalbody = document.getElementById("voteModalbody");
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   nominationList.innerHTML = '';
-  voteModalbody.innerHTML = '';
+  voteModalbody.innerHTML = '<br>';
   for (var i = 0; i < data.nominationsMap.length; i++) {
     const nominationName = data.nominationsMap[i][0];
     const votes = data.nominationsMap[i][1];
@@ -416,20 +435,26 @@ socket.on('new-movie-nomination', data => {
       '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' - ' + ' Votes: ' + votes + '</h3>' +
       '<br>';
     voteModalbody.innerHTML +=
-      '<br>' +
       '<label>' + nominationName + ' </label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
+      '<br>' +
       '<br>';
   }
   beginVotingBtn.disabled = false;
 });
 //Start Movie Polling
 socket.on('voting-started', data => {
+  const addNombtn = document.getElementById('AddNominationbtn');
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   const voteBtn = document.getElementById('voteBtn');
+  const voteModalbody = document.getElementById("voteModalbody");
+  voteModalbody.addEventListener('change', e => {
+    checkVoteModal();
+  })
   voteBtn.addEventListener('click', e => {
     document.getElementById('voteModal').style.display='block';
   });
+  addNombtn.disabled = true;
   beginVotingBtn.disabled = true;
   voteBtn.disabled = false;
   alert(data);
