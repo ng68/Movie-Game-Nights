@@ -39,6 +39,18 @@ activitygamebtn.addEventListener('click', e => {
   changeActivity('game')
 })
 
+function getDate(ts) {
+  // current timestamp in milliseconds
+
+  let date_time = new Date(ts);
+  let date = date_time.getDate();
+  let month = date_time.getMonth() + 1;
+  let year = date_time.getFullYear();
+
+  // prints date & time in YYYY-MM-DD format
+  return(month + "/" + date + "/" + year);
+}
+
 var currentActivity = null;
 //Check User
 onAuthStateChanged(auth, (user) => {
@@ -304,8 +316,8 @@ function startPoll() {
 }
 //Submit Vote
 const submitVoteBtn = document.getElementById("submitVoteBtn")
-submitVoteBtn.addEventListener('click', sendVote);
-function sendVote() {
+submitVoteBtn.addEventListener('click', sendVote(false));
+function sendVote(isRunoff) {
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -318,13 +330,24 @@ function sendVote() {
           uid: user.uid,
           votes: []
         }
-        const voteCheck = document.getElementsByName("voteCheck");
-        for (var i = 0; i < voteCheck.length; i++) {
-          if (voteCheck[i].checked) {
-            voteData.votes.push(voteCheck.value);
+        if(!isRunoff) {
+          const voteCheck = document.getElementsByName("voteCheck");
+          for (var i = 0; i < voteCheck.length; i++) {
+            if (voteCheck[i].checked) {
+              voteData.votes.push(voteCheck[i].value);
+            }
           }
+          socket.emit('vote', voteData);
         }
-        socket.emit('vote', voteData);
+        else if(isRunoff) {
+          const voteCheck = document.getElementsByName("runoffCheck");
+          for (var i = 0; i < voteCheck.length; i++) {
+            if (voteCheck[i].checked) {
+              voteData.votes.push(voteCheck[i].value);
+            }
+          }
+          socket.emit('runoff-vote', voteData);
+        }
         document.getElementById('voteModal').style.display='none';
       }
     });
@@ -338,7 +361,7 @@ function sendVote() {
 socket.on('new-movie-poll', data => {
   currentPollbody.innerHTML = 
   '<div class="w3-center">' +
-    '<h3 class="w3-center" style="font-size: 24px;">Movie Night - ' + data.date + '</h3>' +
+    '<h3 class="w3-center" style="font-size: 24px;">Movie Night - ' + getDate(data.date) + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
@@ -352,11 +375,11 @@ socket.on('new-movie-poll', data => {
   const voteModalheader = document.getElementById("voteModalHeader");
   if (data.activity == 'movie') {
     voteModalheader.innerHTML = 
-    '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + data.date + '</h3>'
+    '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
   }
   else if (data.activity == 'game') {
     voteModalheader.innerHTML = 
-    '<h3 class="w3-center" style="font-size: 20px;">Game Night - ' + data.date + '</h3>'
+    '<h3 class="w3-center" style="font-size: 20px;">Game Night - ' + getDate(data.date) + '</h3>'
   }
   const memberBtns = document.getElementById("memberBtns");
   const user = auth.currentUser;
@@ -430,9 +453,8 @@ socket.on('new-movie-nomination', data => {
   voteModalbody.innerHTML = '<br>';
   for (var i = 0; i < data.nominationsMap.length; i++) {
     const nominationName = data.nominationsMap[i][0];
-    const votes = data.nominationsMap[i][1];
     nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' - ' + ' Votes: ' + votes + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>' +
       '<br>';
     voteModalbody.innerHTML +=
       '<label>' + nominationName + ' </label>' +
@@ -463,7 +485,7 @@ socket.on('voting-started', data => {
 socket.on('new-game-poll', data => {
   currentPollbody.innerHTML = 
   '<div class="w3-center">' +
-    '<h3 class="w3-center" style="font-size: 24px;">Game Night - ' + data.date + '</h3>' +
+    '<h3 class="w3-center" style="font-size: 24px;">Game Night - ' + getDate(data.date) + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '<h3 class="w3-center" style="font-size: 16px;" id="voteCount">Vote Count: ' + data.totalVotes + '</h3>' +
   '</div>' +
@@ -481,7 +503,7 @@ socket.on('new-game-poll', data => {
       '<br>' +
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
       '<br>';
-    voteModalbody.innerHTML =+
+    voteModalbody.innerHTML +=
       '<br>' +
       '<label>' + data.nominationsMap[i][0] + ' </label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">' + 
@@ -520,18 +542,40 @@ socket.on('vote-response', data => {
   }
 });
 //Update Poll
-socket.on('update-poll', data => {
+socket.on('update-count', data => {
   const voteCount = document.getElementById("voteCount");
   const nominationList = document.getElementById("nominationList");
   voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
   nominationList.innerHTML = '';
+  voteModalbody.innerHTML = '<br>';
   for (var i = 0; i < data.nominationsMap.length; i++) {
+    const nominationName = data.nominationsMap[i][0];
+    const votes = data.nominationsMap[i][1]
     nominationList.innerHTML += 
-      '<br>' +
-      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' Votes: ' + votes + '</h3>' +
       '<br>';
   }
 });
+//Runoff Poll
+socket.on('runoff-poll', data => {
+  const voteModalbody = document.getElementById("voteModalbody");
+  const voteBtn = document.getElementById('voteBtn');
+  const submitVoteBtn = document.getElementById("submitVoteBtn")
+  submitVoteBtn.removeEventListener('click', sendVote(false));
+  submitVoteBtn.addEventListener('click', sendVote(true));
+  nominationList.innerHTML = '';
+  voteModalbody.innerHTML = '<br>';
+  for (var i = 0; i < data.runoffPoll.length; i++) {
+    const nominationName = data.runoffPoll[i][0];
+    voteModalbody.innerHTML +=
+      '<label>' + nominationName + ' </label>' +
+      '<input class="w3-radio" type="radio" name="runoffCheck" value=\"' + nominationName + '\">' +
+      '<br>' +
+      '<br>';
+  }
+  alert("We have a tie! Runoff Poll has been opened!");
+  voteBtn.disabled = false;
+})
 
 socket.on('error', data => {
   console.error(data);

@@ -15,17 +15,8 @@ var activePoll = null;
 var nominatorTrack = [];
 var voterTrack = []; 
 
-function getDate() {
-    // current timestamp in milliseconds
-    let ts = Date.now();
-  
-    let date_time = new Date(ts);
-    let date = date_time.getDate();
-    let month = date_time.getMonth() + 1;
-    let year = date_time.getFullYear();
-  
-    // prints date & time in YYYY-MM-DD format
-    return(month + "/" + date + "/" + year);
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
 }
 
 homeNamespace.on('connection', socket => {
@@ -46,7 +37,6 @@ homeNamespace.on('connection', socket => {
         }
         else if(activePoll.activity == 'game') {
             socket.emit("new-game-poll", activePoll);
-            socket.emit("update-poll", activePoll);
         }
     })
     socket.on('create-movie-poll', data => {
@@ -57,13 +47,14 @@ homeNamespace.on('connection', socket => {
             nominatorTrack = [];
             voterTrack = [];
             activePoll = {
-                date: getDate(),
+                //Central Time
+                date: (Date.now() - (1000 * 60 * 60 * 5)),
                 activity: 'movie',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
                 nominationsMap: [],
                 open: false,
-                runoffPoll: null
+                runoffPoll: []
             };
             homeNamespace.emit('new-movie-poll', activePoll);
         }
@@ -79,7 +70,8 @@ homeNamespace.on('connection', socket => {
                 votesMap.push([name, 0]);
             });
             activePoll = {
-                date: getDate(),
+                //Central Time
+                date: (Date.now() - (1000 * 60 * 60 * 5)),
                 activity: 'game',
                 maxVotes: data.numVoters,
                 totalVotes: 0,
@@ -123,26 +115,97 @@ homeNamespace.on('connection', socket => {
             data.votes.forEach(vote => {
                 for (var i = 0; i < activePoll.nominationsMap.length; i++) {
                     var name = activePoll.nominationsMap[i][0];
-                    var count = activePoll.nominationsMap[i][1];
-                    console.log("Voted For: " + vote)
-                    console.log("Adding vote to: " + name)
                     if (name == vote) {
-                        console.log("Vote Counted")
-                        count++;
-                        activePoll.nominationsMap[i][1] = count;
+                        activePoll.nominationsMap[i][1]++;
                         break;
                     }
                 }
             });
             activePoll.totalVotes++;
             socket.emit('vote-response', "OK");
+            setTimeout (() => {socket.emit('update-count', activePoll);}, 1000);
             if (activePoll.totalVotes == activePoll.maxVotes) {
-                //Send Results
+                //Calculate Vote Winner
+                var topVote = ["", 0];
+                const voteMap = activePoll.nominationsMap
+                if (activePoll.activity == 'movie') {
+                    for (var i = 0; i < voteMap.length; i++) {
+                        if (voteMap[i][1] > topVote[1]) {
+                            topVote = voteMap[i];
+                        }
+                    }
+                    for (var j = 0; j < voteMap.length; j++) {
+                        if (voteMap[j][0] == topVote[0]) {
+                            continue;
+                        }
+                        else if (voteMap[j][1] == topVote[1]) {
+                            activePoll.runoffPoll.push([voteMap[j][0] , 0])
+                        }
+                    }
+                    if (activePoll.runoffPoll.length != 0) {
+                        activePoll.runoffPoll.push([topVote[0], 0]);
+                        voterTrack = [];
+                        activePoll.totalVotes = 0
+                        setTimeout (() => {homeNamespace.emit('runoff-poll', activePoll);}, 1000);
+                    }
+                    else {
+                        nominatorTrack = [];
+                        voterTrack = [];
+                        activePoll.winner = topVote[0];
+                        setTimeout (() => {homeNamespace.emit('poll-results', activePoll);}, 1500);
+                        setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                    }
+                }
+                else {
+                    voterTrack = [];
+                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
+                    setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                }
             }
-            else {
-                homeNamespace.emit('update-count', activePoll)
+        }
+    })
+    socket.on('runoff-vote', data => {
+        if (voterTrack.includes(data.uid)) {
+            socket.emit('vote-response', "ERROR-1");
+        }
+        else {
+            voterTrack.push(data.uid);
+            for (var i = 0; i < activePoll.runoffPoll.length; i++) {
+                var name = activePoll.runoffPoll[i][0];
+                if (name == data.votes[0]) {
+                    activePoll.runoffPoll[i][1]++;
+                    break;
+                }
             }
-            
+            activePoll.totalVotes++;
+            socket.emit('vote-response', "OK");
+            if (activePoll.totalVotes == activePoll.maxVotes) {
+                //Calculate Vote Winner
+                var topVote = ["", 0];
+                const voteMap = activePoll.runoffPoll
+                var tie = [];
+                for (var i = 0; i < voteMap.length; i++) {
+                    if (voteMap[i][1] > topVote[1]) {
+                        topVote = voteMap[i];
+                    }
+                }
+                for (var j = 0; j < voteMap.length; j++) {
+                    if (voteMap[j][0] == topVote[0]) {
+                        continue;
+                    }
+                    else if (voteMap[j][1] == topVote[1]) {
+                        tie.push(voteMap[j][0])
+                    }
+                }
+                if (tie.length != 0) {
+                    tie.push(topVote[0]);
+                    const winner = tie[getRandomInt(tie.length)];
+                    setTimeout (() => {homeNamespace.emit('winner', winner);}, 1500);
+                }
+                else {
+                    setTimeout (() => {homeNamespace.emit('winner', topVote[0]);}, 1500);
+                }
+            }
         }
     })
 })
