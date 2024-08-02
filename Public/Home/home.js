@@ -510,6 +510,8 @@ socket.on('new-game-poll', data => {
 });
 //Response from Vote Submission
 socket.on('vote-response', data => {
+  const voteBtn = document.getElementById('voteBtn');
+  voteBtn.disabled = true;
   if (data == "ERROR-1") {
     alert("Error - you have already voted in this poll");
   }

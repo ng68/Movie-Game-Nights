@@ -124,6 +124,7 @@ homeNamespace.on('connection', socket => {
                 for (var i = 0; i < activePoll.nominationsMap.length; i++) {
                     var count = activePoll.nominationsMap[i][1];
                     if (activePoll.nominationsMap[i][0] == vote) {
+                        console.log("Vote Counted")
                         count++;
                         activePoll.nominationsMap[i][1] = count;
                         break;
