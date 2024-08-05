@@ -74,7 +74,7 @@ homeNamespace.on('connection', socket => {
                 //Central Time
                 date: (Date.now() - (1000 * 60 * 60 * 5)),
                 activity: 'Game',
-                maxVotes: data.numVoters,
+                maxVotes: data.maxVotes,
                 totalVotes: 0,
                 nominationsMap: votesMap
             };

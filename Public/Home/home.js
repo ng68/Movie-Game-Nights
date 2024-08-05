@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const socket = io("https://movie-game-nights.onrender.com/home");
 const auth = getAuth();
-//Backend Functions
+//Cloud Functions
 const functions = getFunctions();
 const checkUser = httpsCallable(functions, 'checkUser');
 const createPoll = httpsCallable(functions, 'createPoll');
@@ -168,7 +168,7 @@ function changeActivity(activity) {
         '</select>' +
       '</div>' +
       '<br>';
-    const gamechecklist = document.getElementById("gamechecklist")
+    const gamechecklist = document.getElementById("gamechecklist");
     gamechecklist.innerHTML = 
       '<br>' +
       '<input class="w3-check" type="checkbox" name="gamecheck" value="Skribbl.io">' +
@@ -300,8 +300,8 @@ function startPoll() {
           const data = result.data;
           if (data.isMember) {
             const pollData = {
-              email: email,
-              uid: uid,
+              email: user.email,
+              uid: user.uid,
               maxVotes: numVoters,
               nominations: gameNames
             }
@@ -465,8 +465,7 @@ socket.on('new-movie-nomination', data => {
   for (var i = 0; i < data.nominationsMap.length; i++) {
     const nominationName = data.nominationsMap[i][0];
     nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>' +
-      '<br>';
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
     voteModalbody.innerHTML +=
       '<label>' + nominationName + ' </label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
@@ -481,15 +480,25 @@ socket.on('voting-started', data => {
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   const voteBtn = document.getElementById('voteBtn');
   const voteModalbody = document.getElementById("voteModalbody");
-  voteModalbody.addEventListener('change', e => {
-    checkVoteModal();
-  })
-  voteBtn.addEventListener('click', e => {
-    document.getElementById('voteModal').style.display='block';
-  });
-  addNombtn.disabled = true;
-  beginVotingBtn.disabled = true;
-  voteBtn.disabled = false;
+  if (user) {
+    checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          voteModalbody.addEventListener('change', e => {
+            checkVoteModal();
+          });
+          voteBtn.addEventListener('click', e => {
+            document.getElementById('voteModal').style.display='block';
+          });
+          addNombtn.disabled = true;
+          beginVotingBtn.disabled = true;
+          voteBtn.disabled = false;
+        }
+      });
+  }
+  
   alert(data);
 })
 //Create/Begin Game Poll
@@ -514,14 +523,14 @@ socket.on('new-game-poll', data => {
   const voteModalbody = document.getElementById("voteModalbody");
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
-      '<br>';
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>';
     voteModalbody.innerHTML +=
       '<br>' +
       '<label>' + data.nominationsMap[i][0] + ' </label>' +
       '<input class="w3-check" type="checkbox" name="voteCheck" value="'+ data.nominationsMap[i][0] + '">' + 
       '<br>';
   }
+  voteModalbody.innerHTML += '<br>';
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -536,6 +545,12 @@ socket.on('new-game-poll', data => {
           voteBtn.addEventListener('click', e => {
             document.getElementById('voteModal').style.display='block';
           });
+          const voteModalbody = document.getElementById("voteModalbody");
+          voteModalbody.addEventListener('change', e => {
+            checkVoteModal();
+          });
+          const submitVoteBtn = document.getElementById("submitVoteBtn");
+          submitVoteBtn.addEventListener('click', sendVote);
         }
       });
   } else {
