@@ -1,4 +1,4 @@
-import axios from 'axios'
+const axios = require("axios")
 const port = process.env.PORT;
 if (port == null || port == "") {
 	port = 8080;

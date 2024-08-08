@@ -82,7 +82,7 @@ exports.getMovieHistory = onCall((request) => {
 exports.getGameHistory = onCall((request) => {
     return new Promise(function(resolve) {
         var pollList = []
-        getFirestore().collection('movie-history').orderBy('date').get().then((querySnapshot) => {
+        getFirestore().collection('game-history').orderBy('date').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 pollList.push(doc.data())
             });
