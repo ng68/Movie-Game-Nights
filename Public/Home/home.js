@@ -19,7 +19,6 @@ const auth = getAuth();
 //Cloud Functions
 const functions = getFunctions();
 const checkUser = httpsCallable(functions, 'checkUser');
-const createPoll = httpsCallable(functions, 'createPoll');
 
 const moviesbtn = document.getElementById("moviesbtn")
 const gamesbtn = document.getElementById("gamesbtn")
@@ -580,8 +579,7 @@ socket.on('update-count', data => {
     const nominationName = data.nominationsMap[i][0];
     const votes = data.nominationsMap[i][1]
     nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' Votes: ' + votes + '</h3>' +
-      '<br>';
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' Votes: ' + votes + '</h3>';
   }
 });
 //Runoff Poll
@@ -634,8 +632,7 @@ socket.on('poll-results', data => {
   const nominationList = document.getElementById("nominationList");
   for (var i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>' +
-      '<br>';
+      '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>';
   }
   if (data.activity == 'Movie') {
     if(data.runoffPoll.length != 0) {

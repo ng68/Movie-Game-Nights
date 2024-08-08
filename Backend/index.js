@@ -1,3 +1,4 @@
+import axios from 'axios'
 const port = process.env.PORT;
 if (port == null || port == "") {
 	port = 8080;
@@ -17,6 +18,23 @@ var voterTrack = [];
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
+}
+
+function storeActivePoll() {
+    axios({
+        method: 'post',
+        url: process.env.FUNCTION_URL, 
+        data: activePoll
+      });
+}
+
+function sortNominations(a, b) {
+    if (a[1] === b[1]) {
+        return 0;
+    }
+    else {
+        return (a[1] > b[1]) ? -1 : 1;
+    }
 }
 
 homeNamespace.on('connection', socket => {
@@ -153,14 +171,16 @@ homeNamespace.on('connection', socket => {
                         nominatorTrack = [];
                         voterTrack = [];
                         activePoll.winner = topVote[0];
+                        activePoll.nominationsMap.sort(sortNominations);
                         setTimeout (() => {homeNamespace.emit('poll-results', activePoll);}, 1500);
-                        //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                        storeActivePoll();
                     }
                 }
                 else {
                     voterTrack = [];
+                    activePoll.nominationsMap.sort(sortNominations);
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
-                    //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                    storeActivePoll();
                 }
             }
         }
@@ -202,11 +222,14 @@ homeNamespace.on('connection', socket => {
                     tie.push(topVote[0]);
                     activePoll.winner = tie[getRandomInt(tie.length)];
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
-                    //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                    storeActivePoll();
                 }
                 else {
+                    activePoll.nominationsMap.sort(sortNominations);
+                    activePoll.runoffPoll.sort(sortNominations);
+                    activePoll.winner = topVote[0];
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
-                    //setTimeout (() => {socket.emit('store-poll', activePoll);}, 1000);
+                    storeActivePoll();
                 }
             }
         }

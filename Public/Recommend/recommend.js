@@ -1,3 +1,7 @@
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+const functions = getFunctions();
+const submitRecommendation = httpsCallable(functions, 'submitRecommendation');
 const homebtn = document.getElementById("homebtn")
 const moviesbtn = document.getElementById("moviesbtn")
 const gamesbtn = document.getElementById("gamesbtn")
@@ -26,6 +30,15 @@ submitBtn.addEventListener('click', e => {
         alert("Please fill out all fields before submitting")
     }
     else {
-        window.location.href = "success.html"
+        submitRecommendation()
+        .then((result) => {
+            const status = result.status;
+            if (status == 200) {
+              window.location.href = "success.html"
+            }
+            else if (status == 500) {
+                alert("Something went wrong. Please try again!")
+            }
+          });
     }
 })

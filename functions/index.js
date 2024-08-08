@@ -1,8 +1,8 @@
 const {initializeApp} = require("firebase-admin/app");
-const {onCall, HttpsError} = require("firebase-functions/v2/https");
+const {onCall, HttpsError, onRequest} = require("firebase-functions/v2/https");
 const {logger} = require("firebase-functions/v2");
 
-const {getFirestore} = require("firebase-admin/firestore");
+const {getFirestore, setDoc} = require("firebase-admin/firestore");
 
 initializeApp();
 
@@ -19,6 +19,74 @@ exports.checkUser = onCall((request) => {
                 }
             });
             resolve({isMember: false});
+        })
+    })
+});
+
+exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" },
+    (req, res) => {
+        const poll = req.body;
+        var nominations = [];
+        poll.nominationsMap.forEach(nomination => {
+            nominations.push(nomination[0]);
+        })
+        if (poll.activity == 'Movie') {
+            getFirestore().collection('movie-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes}).then(() => {
+                console.log("Movie Poll document successfully written!");
+                res.status(201).send("Store Poll Success"); 
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+                res.status(500).send(error);
+            });
+            
+        }
+        else if (poll.activity == 'Game') {
+            getFirestore().collection('game-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes}).then(() => {
+                console.log("Game poll document successfully written!");
+                res.status(200).send("Store Poll Success");
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+                res.status(500).send(error);
+            });
+            
+        }
+    }
+);
+
+exports.submitRecommendation = onCall((req, res) => {
+    const rec = req.body;
+    getFirestore().collection('recommendations').set(req).then(() => {
+        console.log("Recommendation document successfully written!");
+        res.status(200).send("Store Poll Success");
+    })
+    .catch((error) => {
+        console.error("Error writing document: ", error);
+        res.status(500).send(error);
+    });
+});
+
+exports.getMovieHistory = onCall((request) => {
+    return new Promise(function(resolve) {
+        var pollList = []
+        getFirestore().collection('movie-history').orderBy('date').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                pollList.push(doc.data())
+            });
+            resolve({pollList: pollList});
+        })
+    })
+});
+
+exports.getGameHistory = onCall((request) => {
+    return new Promise(function(resolve) {
+        var pollList = []
+        getFirestore().collection('movie-history').orderBy('date').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                pollList.push(doc.data())
+            });
+            resolve({pollList: pollList});
         })
     })
 });
