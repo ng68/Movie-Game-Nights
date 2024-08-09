@@ -50,7 +50,7 @@ function getDate(ts) {
   return(month + "/" + date + "/" + year);
 }
 
-var currentActivity = null;
+let currentActivity = null;
 //Check User
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -221,8 +221,8 @@ function checkGameModal() {
   const gameCheck = document.getElementsByName('gamecheck')
   const numGameVoters = document.getElementById('numGameVoters')
   const startpollbtn = document.getElementById("startpollbtn")
-  var hasChecked = false
-  for (var i = 0; i < gameCheck.length; i++) {
+  let hasChecked = false
+  for (let i = 0; i < gameCheck.length; i++) {
     if (gameCheck[i].checked) {
       hasChecked = true
       break;
@@ -239,8 +239,8 @@ function checkGameModal() {
 function checkVoteModal() {
   const voteCheck = document.getElementsByName('voteCheck')
   const submitVoteBtn = document.getElementById("submitVoteBtn")
-  var hasChecked = false
-  for (var i = 0; i < voteCheck.length; i++) {
+  let hasChecked = false
+  for (let i = 0; i < voteCheck.length; i++) {
     if (voteCheck[i].checked) {
       hasChecked = true
       break;
@@ -257,7 +257,7 @@ function checkVoteModal() {
 const startpollbtn = document.getElementById("startpollbtn")
 startpollbtn.addEventListener('click', startPoll);
 function startPoll() {
-  var numVoters = null
+  let numVoters = null
   if (currentActivity == 'movie') {
     numVoters = document.getElementById('numMovieVoters').selectedIndex
     const user = auth.currentUser;
@@ -285,8 +285,8 @@ function startPoll() {
   else if (currentActivity == 'game') {
     numVoters = document.getElementById('numGameVoters').selectedIndex
     const gamecheck = document.getElementsByName('gamecheck');
-    var gameNames = [];
-    for (var i = 0; i < gamecheck.length; i++) {
+    let gameNames = [];
+    for (let i = 0; i < gamecheck.length; i++) {
       if (gamecheck[i].checked) {
         gameNames.push(gamecheck[i].value);
       }
@@ -322,13 +322,13 @@ function sendVote() {
       /** @type {any} */
       const data = result.data;
       if (data.isMember) {
-        var voteData = {
+        let voteData = {
           email: user.email,
           uid: user.uid,
           votes: []
         }
         const voteCheck = document.getElementsByName("voteCheck");
-        for (var i = 0; i < voteCheck.length; i++) {
+        for (let i = 0; i < voteCheck.length; i++) {
           if (voteCheck[i].checked) {
             voteData.votes.push(voteCheck[i].value);
           }
@@ -351,13 +351,13 @@ function sendRunoffVote() {
       /** @type {any} */
       const data = result.data;
       if (data.isMember) {
-        var voteData = {
+        let voteData = {
           email: user.email,
           uid: user.uid,
           votes: []
         }
         const voteCheck = document.getElementsByName("runoffCheck");
-        for (var i = 0; i < voteCheck.length; i++) {
+        for (let i = 0; i < voteCheck.length; i++) {
           if (voteCheck[i].checked) {
             voteData.votes.push(voteCheck[i].value);
           }
@@ -418,7 +418,7 @@ socket.on('new-movie-poll', data => {
             alert("Please enter a movie name")
           }
           else {
-            var movieData = {
+            let movieData = {
               name: movieName.value,
               email: user.email,
               uid: user.uid
@@ -461,7 +461,7 @@ socket.on('new-movie-nomination', data => {
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
-  for (var i = 0; i < data.nominationsMap.length; i++) {
+  for (let i = 0; i < data.nominationsMap.length; i++) {
     const nominationName = data.nominationsMap[i][0];
     nominationList.innerHTML += 
       '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
@@ -479,6 +479,7 @@ socket.on('voting-started', data => {
   const beginVotingBtn = document.getElementById('beginVotingBtn');
   const voteBtn = document.getElementById('voteBtn');
   const voteModalbody = document.getElementById("voteModalbody");
+  const user = auth.currentUser;
   if (user) {
     checkUser()
       .then((result) => {
@@ -520,7 +521,7 @@ socket.on('new-game-poll', data => {
   const voteModalheader = document.getElementById("voteModalHeader");
   voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Game Night - ' + getDate(data.date) + '</h3>'
   const voteModalbody = document.getElementById("voteModalbody");
-  for (var i = 0; i < data.nominationsMap.length; i++) {
+  for (let i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>';
     voteModalbody.innerHTML +=
@@ -575,7 +576,7 @@ socket.on('update-count', data => {
   voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
-  for (var i = 0; i < data.nominationsMap.length; i++) {
+  for (let i = 0; i < data.nominationsMap.length; i++) {
     const nominationName = data.nominationsMap[i][0];
     const votes = data.nominationsMap[i][1]
     nominationList.innerHTML += 
@@ -591,7 +592,7 @@ socket.on('runoff-poll', data => {
   submitVoteBtn.addEventListener('click', sendRunoffVote);
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
-  for (var i = 0; i < data.runoffPoll.length; i++) {
+  for (let i = 0; i < data.runoffPoll.length; i++) {
     const nominationName = data.runoffPoll[i][0];
     voteModalbody.innerHTML +=
       '<label>' + nominationName + ' </label>' +
@@ -630,7 +631,7 @@ socket.on('poll-results', data => {
     '<div class="w3-center" id="nominationList">' +
     '</div>';
   const nominationList = document.getElementById("nominationList");
-  for (var i = 0; i < data.nominationsMap.length; i++) {
+  for (let i = 0; i < data.nominationsMap.length; i++) {
     nominationList.innerHTML += 
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>';
   }
@@ -642,7 +643,7 @@ socket.on('poll-results', data => {
       '<div class="w3-center" id="runoffList">' +
       '</div>';
       const runoffList = document.getElementById("runoffList");
-      for (var i = 0; i < data.runoffPoll.length; i++) {
+      for (let i = 0; i < data.runoffPoll.length; i++) {
         runoffList.innerHTML += 
         '<h3 class="w3-center" style="font-size: 16px;">' + data.runoffPoll[i][0] + ': ' + ' Votes: ' + data.runoffPoll[i][1] + '</h3>' +
         '<br>';

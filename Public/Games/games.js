@@ -46,7 +46,7 @@ function getDate(ts) {
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-      getMovieHistory()
+      getGameHistory()
         .then((result) => {
           const pollList = result.data.pollList;
           const listDiv = document.getElementById("pollList");

@@ -12,9 +12,9 @@ const io = new Server(port, {
 
 const homeNamespace = io.of('/home');
 
-var activePoll = null;
-var nominatorTrack = [];
-var voterTrack = []; 
+let activePoll = null;
+let nominatorTrack = [];
+let voterTrack = []; 
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
@@ -84,7 +84,7 @@ homeNamespace.on('connection', socket => {
         }
         else {
             voterTrack = [];
-            var votesMap = [];
+            let votesMap = [];
             data.nominations.forEach(name => {
                 votesMap.push([name, 0]);
             });
@@ -110,7 +110,7 @@ homeNamespace.on('connection', socket => {
         else {
             nominatorTrack.push(data.uid);
             console.log("New Movie Added: " + data.name);
-            var newNom = [data.name, 0]
+            let newNom = [data.name, 0]
             activePoll.nominationsMap.push(newNom);
             homeNamespace.emit('new-movie-nomination', activePoll);
             socket.emit('add-movie-response', "OK"); 
@@ -133,8 +133,8 @@ homeNamespace.on('connection', socket => {
         else {
             voterTrack.push(data.uid);
             data.votes.forEach(vote => {
-                for (var i = 0; i < activePoll.nominationsMap.length; i++) {
-                    var name = activePoll.nominationsMap[i][0];
+                for (let i = 0; i < activePoll.nominationsMap.length; i++) {
+                    let name = activePoll.nominationsMap[i][0];
                     if (name == vote) {
                         activePoll.nominationsMap[i][1]++;
                         break;
@@ -146,15 +146,15 @@ homeNamespace.on('connection', socket => {
             setTimeout (() => {socket.emit('update-count', activePoll);}, 1000);
             if (activePoll.totalVotes == activePoll.maxVotes) {
                 //Calculate Vote Winner
-                var topVote = ["", 0];
+                let topVote = ["", 0];
                 const voteMap = activePoll.nominationsMap
                 if (activePoll.activity == 'Movie') {
-                    for (var i = 0; i < voteMap.length; i++) {
+                    for (let i = 0; i < voteMap.length; i++) {
                         if (voteMap[i][1] > topVote[1]) {
                             topVote = voteMap[i];
                         }
                     }
-                    for (var j = 0; j < voteMap.length; j++) {
+                    for (let j = 0; j < voteMap.length; j++) {
                         if (voteMap[j][0] == topVote[0]) {
                             continue;
                         }
@@ -193,8 +193,8 @@ homeNamespace.on('connection', socket => {
         }
         else {
             voterTrack.push(data.uid);
-            for (var i = 0; i < activePoll.runoffPoll.length; i++) {
-                var name = activePoll.runoffPoll[i][0];
+            for (let i = 0; i < activePoll.runoffPoll.length; i++) {
+                let name = activePoll.runoffPoll[i][0];
                 if (name == data.votes[0]) {
                     activePoll.runoffPoll[i][1]++;
                     break;
@@ -204,15 +204,15 @@ homeNamespace.on('connection', socket => {
             socket.emit('vote-response', "OK");
             if (activePoll.totalVotes == activePoll.maxVotes) {
                 //Calculate Vote Winner
-                var topVote = ["", 0];
+                let topVote = ["", 0];
                 const voteMap = activePoll.runoffPoll
-                var tie = [];
-                for (var i = 0; i < voteMap.length; i++) {
+                let tie = [];
+                for (let i = 0; i < voteMap.length; i++) {
                     if (voteMap[i][1] > topVote[1]) {
                         topVote = voteMap[i];
                     }
                 }
-                for (var j = 0; j < voteMap.length; j++) {
+                for (let j = 0; j < voteMap.length; j++) {
                     if (voteMap[j][0] == topVote[0]) {
                         continue;
                     }

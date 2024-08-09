@@ -26,7 +26,7 @@ exports.checkUser = onCall((request) => {
 exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" },
     (req, res) => {
         const poll = req.body;
-        var nominations = [];
+        let nominations = [];
         poll.nominationsMap.forEach(nomination => {
             nominations.push(nomination[0]);
         })
@@ -69,7 +69,7 @@ exports.submitRecommendation = onCall((req, res) => {
 
 exports.getMovieHistory = onCall((request) => {
     return new Promise(function(resolve) {
-        var pollList = []
+        let pollList = []
         getFirestore().collection('movie-history').orderBy('date').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 pollList.push(doc.data())
@@ -81,7 +81,7 @@ exports.getMovieHistory = onCall((request) => {
 
 exports.getGameHistory = onCall((request) => {
     return new Promise(function(resolve) {
-        var pollList = []
+        let pollList = []
         getFirestore().collection('game-history').orderBy('date').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 pollList.push(doc.data())
