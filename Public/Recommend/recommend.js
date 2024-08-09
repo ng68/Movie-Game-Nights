@@ -1,4 +1,17 @@
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js';
+const firebaseConfig = {
+    apiKey: "AIzaSyB05-JI2yJoQK5XQ7GzyiCjI_WymHj2EO4",
+    authDomain: "movie-and-game-nights.firebaseapp.com",
+    databaseURL: "https://movie-and-game-nights-default-rtdb.firebaseio.com",
+    projectId: "movie-and-game-nights",
+    storageBucket: "movie-and-game-nights.appspot.com",
+    messagingSenderId: "141273252315",
+    appId: "1:141273252315:web:0c56f7dc95c90e8aefa7fe",
+    measurementId: "G-LYD4S8DDLX"
+};
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 const functions = getFunctions();
 const submitRecommendation = httpsCallable(functions, 'submitRecommendation');

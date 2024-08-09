@@ -38,9 +38,34 @@
           <a class="w3-bar-item w3-button w3-padding-large w3-hide-small" id="recommendbtn"><i class="fa fa-thumb-tack"></i></i> RECOMMENDATIONS</a>
         </div>
       </div> 
-    
+      
+      <div class="w3-container w3-content" style="max-width:1500px;margin-top:80px">    
+        <div class="w3-card w3-round w3-white">
+          <div class="w3-container w3-padding w3-center">
+            <h1>Game Night History</h1>
+            <hr>
+            <div id="pollList">
+              
+            </div>
+            <br>    
+          </div>
+        </div>
+        <br>
+      <!-- End Page Container -->
+      </div>
     <!-- Scripts -->
     <script>
+      function pollDetails(id) {
+      var x = document.getElementById(id);
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+        x.previousElementSibling.className += " w3-theme-d1";
+      } else { 
+        x.className = x.className.replace("w3-show", "");
+        x.previousElementSibling.className = 
+        x.previousElementSibling.className.replace(" w3-theme-d1", "");
+      }
+    }
     </script>
   </body>
 </html>

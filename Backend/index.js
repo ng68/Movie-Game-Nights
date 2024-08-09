@@ -94,7 +94,8 @@ homeNamespace.on('connection', socket => {
                 activity: 'Game',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
-                nominationsMap: votesMap
+                nominationsMap: votesMap,
+                top3: []
             };
             homeNamespace.emit('new-game-poll', activePoll);
         }
@@ -179,6 +180,7 @@ homeNamespace.on('connection', socket => {
                 else {
                     voterTrack = [];
                     activePoll.nominationsMap.sort(sortNominations);
+                    activePoll.top3.push(activePoll.nominations[0][0], activePoll.nominations[1][0], activePoll.nominations[2][0])
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
                 }

@@ -31,7 +31,7 @@ exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" }
             nominations.push(nomination[0]);
         })
         if (poll.activity == 'Movie') {
-            getFirestore().collection('movie-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes}).then(() => {
+            getFirestore().collection('movie-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes, winner: poll.winner}).then(() => {
                 console.log("Movie Poll document successfully written!");
                 res.status(201).send("Store Poll Success"); 
             })
@@ -42,7 +42,7 @@ exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" }
             
         }
         else if (poll.activity == 'Game') {
-            getFirestore().collection('game-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes}).then(() => {
+            getFirestore().collection('game-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes, top3: poll.top3}).then(() => {
                 console.log("Game poll document successfully written!");
                 res.status(200).send("Store Poll Success");
             })
