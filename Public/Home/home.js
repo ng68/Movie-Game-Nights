@@ -590,7 +590,6 @@ socket.on('update-count', data => {
   const nominationList = document.getElementById("nominationList");
   voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
   nominationList.innerHTML = '';
-  voteModalbody.innerHTML = '<br>';
   for (let i = 0; i < data.nominationsMap.length; i++) {
     const nominationName = data.nominationsMap[i][0];
     const votes = data.nominationsMap[i][1]

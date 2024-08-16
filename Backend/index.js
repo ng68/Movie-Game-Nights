@@ -66,7 +66,7 @@ homeNamespace.on('connection', socket => {
             voterTrack = [];
             activePoll = {
                 //Central Time
-                date: (Date.now() - (1000 * 60 * 60 * 5)),
+                date: (Date.now()),
                 activity: 'Movie',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
@@ -90,7 +90,7 @@ homeNamespace.on('connection', socket => {
             });
             activePoll = {
                 //Central Time
-                date: (Date.now() - (1000 * 60 * 60 * 5)),
+                date: (Date.now()),
                 activity: 'Game',
                 maxVotes: data.maxVotes,
                 totalVotes: 0,
@@ -143,7 +143,6 @@ homeNamespace.on('connection', socket => {
             });
             activePoll.totalVotes++;
             socket.emit('vote-response', "OK");
-            setTimeout (() => {socket.emit('update-count', activePoll);}, 1000);
             if (activePoll.totalVotes == activePoll.maxVotes) {
                 //Calculate Vote Winner
                 let topVote = ["", 0];
@@ -186,6 +185,9 @@ homeNamespace.on('connection', socket => {
                     socket.emit('poll-results', activePoll);
                     setTimeout (() => {activePoll = null;}, 1500);
                 }
+            }
+            else {
+                setTimeout (() => {homeNamespace.emit('update-count', activePoll);}, 500);
             }
         }
     })
