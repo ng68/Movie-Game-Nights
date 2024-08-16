@@ -89,7 +89,7 @@ exports.getRecommendations = onCall((request) => {
 exports.getMovieHistory = onCall((request) => {
     return new Promise(function(resolve) {
         let pollList = []
-        getFirestore().collection('movie-history').orderBy('date').get().then((querySnapshot) => {
+        getFirestore().collection('movie-history').orderBy('date', 'desc').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 pollList.push(doc.data())
             });
@@ -101,7 +101,7 @@ exports.getMovieHistory = onCall((request) => {
 exports.getGameHistory = onCall((request) => {
     return new Promise(function(resolve) {
         let pollList = []
-        getFirestore().collection('game-history').orderBy('date').get().then((querySnapshot) => {
+        getFirestore().collection('game-history').orderBy('date', 'desc').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 pollList.push(doc.data())
             });

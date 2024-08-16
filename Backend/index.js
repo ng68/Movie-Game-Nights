@@ -173,18 +173,16 @@ homeNamespace.on('connection', socket => {
                         voterTrack = [];
                         activePoll.winner = topVote[0];
                         activePoll.nominationsMap.sort(sortNominations);
-                        setTimeout (() => {homeNamespace.emit('poll-results', activePoll);}, 1500);
                         storeActivePoll();
-                        activePoll = null;
+                        setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
                     }
                 }
                 else {
                     voterTrack = [];
                     activePoll.nominationsMap.sort(sortNominations);
                     activePoll.top3.push(activePoll.nominations[0][0], activePoll.nominations[1][0], activePoll.nominations[2][0])
-                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
-                    activePoll = null;
+                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
                 }
             }
         }
@@ -225,17 +223,15 @@ homeNamespace.on('connection', socket => {
                 if (tie.length != 0) {
                     tie.push(topVote[0]);
                     activePoll.winner = tie[getRandomInt(tie.length)];
-                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
-                    activePoll = null;
+                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
                 }
                 else {
                     activePoll.nominationsMap.sort(sortNominations);
                     activePoll.runoffPoll.sort(sortNominations);
                     activePoll.winner = topVote[0];
-                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
-                    activePoll = null;
+                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
                 }
             }
         }
