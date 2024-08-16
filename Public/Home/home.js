@@ -405,8 +405,7 @@ socket.on('new-movie-poll', data => {
   const voteModalheader = document.getElementById("voteModalHeader");
   voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
   const memberBtns = document.getElementById("memberBtns");
-  const submitVoteBtn = document.getElementById("submitVoteBtn");
-  submitVoteBtn.addEventListener('click', sendVote);
+ 
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -427,7 +426,9 @@ socket.on('new-movie-poll', data => {
         '<button class="w3-button w3-black" id="beginVotingBtn" disabled>Begin Voting</button>';
         const movieName = document.getElementById('movieName');
         const addNombtn = document.getElementById('AddNominationbtn');
-        const beginVotingBtn = document.getElementById('beginVotingBtn');
+        const beginVotingBtn = document.getElementById('beginVotingBtn'); 
+        const submitVoteBtn = document.getElementById("submitVoteBtn");
+        submitVoteBtn.addEventListener('click', sendVote);
         addNombtn.addEventListener('click', e => {
           if (movieName.value == '') {
             alert("Please enter a movie name")
