@@ -174,7 +174,8 @@ homeNamespace.on('connection', socket => {
                         activePoll.winner = topVote[0];
                         activePoll.nominationsMap.sort(sortNominations);
                         storeActivePoll();
-                        setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
+                        socket.emit('poll-results', activePoll);
+                        setTimeout (() => {activePoll = null;}, 1500);
                     }
                 }
                 else {
@@ -182,7 +183,8 @@ homeNamespace.on('connection', socket => {
                     activePoll.nominationsMap.sort(sortNominations);
                     activePoll.top3.push(activePoll.nominations[0][0], activePoll.nominations[1][0], activePoll.nominations[2][0])
                     storeActivePoll();
-                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
+                    socket.emit('poll-results', activePoll);
+                    setTimeout (() => {activePoll = null;}, 1500);
                 }
             }
         }
@@ -224,14 +226,16 @@ homeNamespace.on('connection', socket => {
                     tie.push(topVote[0]);
                     activePoll.winner = tie[getRandomInt(tie.length)];
                     storeActivePoll();
-                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
+                    socket.emit('poll-results', activePoll);
+                    setTimeout (() => {activePoll = null;}, 1500);
                 }
                 else {
                     activePoll.nominationsMap.sort(sortNominations);
                     activePoll.runoffPoll.sort(sortNominations);
                     activePoll.winner = topVote[0];
                     storeActivePoll();
-                    setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500).then(activePoll = null);
+                    socket.emit('poll-results', activePoll);
+                    setTimeout (() => {activePoll = null;}, 1500);
                 }
             }
         }
