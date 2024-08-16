@@ -31,7 +31,7 @@ exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" }
             nominations.push(nomination[0]);
         })
         if (poll.activity == 'Movie') {
-            getFirestore().collection('movie-history').set({date: poll.date, nominations: nominations, voters: poll.maxVotes, winner: poll.winner}).then(() => {
+            getFirestore().collection('movie-history').add({date: poll.date, nominations: nominations, voters: poll.maxVotes, winner: poll.winner}).then(() => {
                 console.log("Movie Poll document successfully written!");
                 res.status(201).send("Store Poll Success"); 
             })
@@ -55,16 +55,35 @@ exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" }
     }
 );
 
-exports.submitRecommendation = onCall((req, res) => {
-    const rec = req.body;
-    getFirestore().collection('recommendations').set(req).then(() => {
-        console.log("Recommendation document successfully written!");
-        res.status(200).send("Store Poll Success");
+exports.submitRecommendation = onCall((request) => {
+    return new Promise(function(resolve) {
+        const rec = {
+            type: request.data.type,
+            name: request.data.name,
+            recommendation: request.data.recommendation,
+            message: request.data.message
+        }
+        getFirestore().collection('recommendations').add(rec).then(() => {
+            console.log("Recommendation document successfully written!");
+            resolve({status: 200});
+        })
+        .catch((error) => {
+            console.error("Error writing document: ", error);
+            resolve({status: 500, msg: error});
+        });
     })
-    .catch((error) => {
-        console.error("Error writing document: ", error);
-        res.status(500).send(error);
-    });
+});
+
+exports.getRecommendations = onCall((request) => {
+    return new Promise(function(resolve) {
+        let recList = []
+        getFirestore().collection('recommendations').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                recList.push(doc.data())
+            });
+            resolve({recList: recList});
+        })
+    })
 });
 
 exports.getMovieHistory = onCall((request) => {

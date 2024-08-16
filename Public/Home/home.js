@@ -19,6 +19,7 @@ const auth = getAuth();
 //Cloud Functions
 const functions = getFunctions();
 const checkUser = httpsCallable(functions, 'checkUser');
+const getRecommendations = httpsCallable(functions, 'getRecommendations');
 
 const moviesbtn = document.getElementById("moviesbtn")
 const gamesbtn = document.getElementById("gamesbtn")
@@ -55,9 +56,23 @@ let currentActivity = null;
 onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log("Logged in as " + user.email)
+    getRecommendations()
+      .then((result) => {
+        const recList = result.data.recList;
+        const listDiv = document.getElementById("recList");
+        recList.forEach(rec => {
+          listDiv.innerHTML += 
+          '<div class="w3-button w3-block w3-theme-l1 w3-left-align">'+ rec.type + '</div>' +
+          '<div class="w3-container w3-theme-l2">' +
+            '<h3 style="font-size: 16px;">Name: ' + rec.name + '</h3>' +
+            '<h3 style="font-size: 16px;">Recommendation: ' + rec.recommendation + '</h3>' + 
+            '<h3 style="font-size: 14px;">Message: ' + rec.message + '</h3>' +
+          '</div>' + 
+          '<br>';
+        });
+      });
     checkUser()
       .then((result) => {
-        /** @type {any} */
         const data = result.data;
         if (data.isMember) {
           console.log("Verified as Member")
@@ -627,12 +642,12 @@ socket.on('poll-results', data => {
     '<h3 class="w3-center" style="font-size: 16px;">Number of Voters: ' + data.maxVotes + '</h3>' +
     '</div>' +
     '<hr>' + 
-    '<h3 class="w3-center" style="font-size: 20px;">Nominations List</h3>' +
-    '<div class="w3-center" id="nominationList">' +
+    '<h3 class="w3-center" style="font-size: 20px;">Results List</h3>' +
+    '<div class="w3-center" id="resultList">' +
     '</div>';
-  const nominationList = document.getElementById("nominationList");
+  const resultList = document.getElementById("resultList");
   for (let i = 0; i < data.nominationsMap.length; i++) {
-    nominationList.innerHTML += 
+    resultList.innerHTML += 
       '<h3 class="w3-center" style="font-size: 16px;">' + data.nominationsMap[i][0] + ': ' + ' Votes: ' + data.nominationsMap[i][1] + '</h3>';
   }
   if (data.activity == 'Movie') {

@@ -43,14 +43,14 @@ submitBtn.addEventListener('click', e => {
         alert("Please fill out all fields before submitting")
     }
     else {
-        submitRecommendation()
+        submitRecommendation({type: activityType.value, name: name.value, recommendation: recommendation.value, message: message.value})
         .then((result) => {
-            const status = result.status;
-            if (status == 200) {
+            const data = result.data;
+            if (data.status == 200) {
               window.location.href = "success.html"
             }
-            else if (status == 500) {
-                alert("Something went wrong. Please try again!")
+            else if (data.status == 500) {
+                alert(data.msg)
             }
           });
     }

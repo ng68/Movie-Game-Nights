@@ -175,6 +175,7 @@ homeNamespace.on('connection', socket => {
                         activePoll.nominationsMap.sort(sortNominations);
                         setTimeout (() => {homeNamespace.emit('poll-results', activePoll);}, 1500);
                         storeActivePoll();
+                        activePoll = null;
                     }
                 }
                 else {
@@ -183,6 +184,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.top3.push(activePoll.nominations[0][0], activePoll.nominations[1][0], activePoll.nominations[2][0])
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
+                    activePoll = null;
                 }
             }
         }
@@ -225,6 +227,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.winner = tie[getRandomInt(tie.length)];
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
+                    activePoll = null;
                 }
                 else {
                     activePoll.nominationsMap.sort(sortNominations);
@@ -232,6 +235,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.winner = topVote[0];
                     setTimeout (() => {socket.emit('poll-results', activePoll);}, 1500);
                     storeActivePoll();
+                    activePoll = null;
                 }
             }
         }
