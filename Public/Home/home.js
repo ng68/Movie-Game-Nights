@@ -404,8 +404,6 @@ socket.on('new-movie-poll', data => {
   '</div>';
   const voteModalheader = document.getElementById("voteModalHeader");
   voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
-  const memberBtns = document.getElementById("memberBtns");
- 
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -413,6 +411,7 @@ socket.on('new-movie-poll', data => {
       /** @type {any} */
       const data = result.data;
       if (data.isMember) {
+        const memberBtns = document.getElementById("memberBtns");
         memberBtns.innerHTML = 
         '<label><b>Movie Name</b></label>' +
         '<input class="w3-input w3-border" type="text" id="movieName">' +

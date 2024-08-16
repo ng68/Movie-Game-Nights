@@ -45,12 +45,12 @@ homeNamespace.on('connection', socket => {
             socket.emit("poll-response", "No active poll found");
         }
         else if(activePoll.activity == 'Movie') {
-            socket.emit("new-movie-poll", activePoll);
+            setTimeout (() => {socket.emit('new-movie-poll', activePoll);}, 1000);
             if (activePoll.nominationsMap.length != 0) {
-                setTimeout (() => {socket.emit('new-movie-nomination', activePoll);}, 1500);  
+                setTimeout (() => {socket.emit('new-movie-nomination', activePoll);}, 500);  
             }
             if (activePoll.open == true) {
-                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 1500);   
+                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 500);   
             }
         }
         else if(activePoll.activity == 'Game') {
