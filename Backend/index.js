@@ -1,5 +1,6 @@
 const axios = require("axios")
 const port = process.env.PORT;
+const nameMap = JSON.parse(process.env.NAME_MAP);
 if (port == null || port == "") {
 	port = 8080;
 }
@@ -50,7 +51,7 @@ homeNamespace.on('connection', socket => {
                 setTimeout (() => {socket.emit('new-movie-nomination', activePoll);}, 500);  
             }
             if (activePoll.open == true) {
-                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 500);   
+                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 500);
             }
         }
         else if(activePoll.activity == 'Game') {
@@ -73,7 +74,10 @@ homeNamespace.on('connection', socket => {
                 nominationsMap: [],
                 open: false,
                 runoffPoll: [],
-                winner: ''
+                winner: {
+                    name: '',
+                    nominator: ''
+                }
             };
             homeNamespace.emit('new-movie-poll', activePoll);
         }
@@ -101,14 +105,14 @@ homeNamespace.on('connection', socket => {
         }
     });
     socket.on('add-movie', data => {
-        if (nominatorTrack.includes(data.uid)) {
+        if (nominatorTrack.sum(nom => nom.includes(data.uid))) {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else if (nominatorTrack.length == activePoll.maxVotes) {
             socket.emit('add-movie-response', "ERROR-2");
         }
         else {
-            nominatorTrack.push(data.uid);
+            nominatorTrack.push([data.name, nameMap[data.uid]]);
             console.log("New Movie Added: " + data.name);
             let newNom = [data.name, 0]
             activePoll.nominationsMap.push(newNom);
@@ -170,7 +174,8 @@ homeNamespace.on('connection', socket => {
                     else {
                         nominatorTrack = [];
                         voterTrack = [];
-                        activePoll.winner = topVote[0];
+                        activePoll.winner.name = topVote[0];
+                        activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0])) ?? "";
                         activePoll.nominationsMap.sort(sortNominations);
                         storeActivePoll();
                         homeNamespace.emit('poll-results', activePoll);

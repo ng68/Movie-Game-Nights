@@ -31,7 +31,7 @@ exports.storePoll = onRequest({ cors: "https://movie-game-nights.onrender.com" }
             nominations.push(nomination[0]);
         })
         if (poll.activity == 'Movie') {
-            getFirestore().collection('movie-history').add({date: poll.date, nominations: nominations, voters: poll.maxVotes, winner: poll.winner}).then(() => {
+            getFirestore().collection('movie-history').add({date: poll.date, nominations: nominations, voters: poll.maxVotes, winner: poll.winner.name, winNominator: poll.winner.nominator}).then(() => {
                 console.log("Movie Poll document successfully written!");
                 res.status(201).send("Store Poll Success"); 
             })
