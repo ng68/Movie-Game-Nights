@@ -62,6 +62,9 @@ homeNamespace.on('connection', socket => {
         if (activePoll != null) {
             socket.emit('error', "Active Poll is not null");
         }
+        if (!nameMap.some(member => member.includes(data.uid))) {
+            socket.emit('error', "User is not authorized");
+        }
         else {
             nominatorTrack = [];
             voterTrack = [];
@@ -86,6 +89,9 @@ homeNamespace.on('connection', socket => {
         if (activePoll != null) {
             socket.emit('error', "Active Poll is not null");
         }
+        if (!nameMap.some(member => member.includes(data.uid))) {
+            socket.emit('error', "User is not authorized");
+        }
         else {
             voterTrack = [];
             let votesMap = [];
@@ -105,7 +111,10 @@ homeNamespace.on('connection', socket => {
         }
     });
     socket.on('add-movie', data => {
-        if (nominatorTrack.sum(nom => nom.includes(data.uid))) {
+        if (!nameMap.some(member => member.includes(data.uid))) {
+            socket.emit('error', "User is not authorized");
+        }
+        if (nominatorTrack.some(nom => nom.includes(data.uid))) {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else if (nominatorTrack.length == activePoll.maxVotes) {
@@ -121,16 +130,21 @@ homeNamespace.on('connection', socket => {
         }
     });
     socket.on('begin-vote', data => {
+        if (!nameMap.some(member => member.includes(data.uid))) {
+            socket.emit('error', "User is not authorized");
+        }
         if (activePoll.nominationsMap.size == 0) {
             socket.emit('voting-started', "ERROR-1");
         }
         else {
             activePoll.open = true;
-            console.log(data + " Initiated Voting");
             homeNamespace.emit('voting-started', "Voting has been opened!" );
         }
     })
     socket.on('vote', data => {
+        if (!nameMap.some(member => member.includes(data.uid))) {
+            socket.emit('error', "User is not authorized");
+        }
         if (voterTrack.includes(data.uid)) {
             socket.emit('vote-response', "ERROR-1");
         }
@@ -199,6 +213,9 @@ homeNamespace.on('connection', socket => {
     socket.on('runoff-vote', data => {
         if (voterTrack.includes(data.uid)) {
             socket.emit('vote-response', "ERROR-1");
+        }
+        if (!nameMap.some(member => member.includes(data.uid))) {
+            socket.emit('error', "User is not authorized");
         }
         else {
             voterTrack.push(data.uid);

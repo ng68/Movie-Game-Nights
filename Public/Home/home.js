@@ -442,7 +442,7 @@ socket.on('new-movie-poll', data => {
           }
         })
         beginVotingBtn.addEventListener('click', e => {
-          socket.emit('begin-vote', user.email);
+          socket.emit('begin-vote', user.uid);
         })
       }
     }); 
