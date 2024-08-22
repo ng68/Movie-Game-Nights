@@ -46,9 +46,6 @@ homeNamespace.on('connection', socket => {
         }
         else if(activePoll.activity == 'Movie') {
             setTimeout (() => {socket.emit('new-movie-poll', activePoll);}, 1000);
-            if (activePoll.open == true) {
-                setTimeout (() => {socket.emit('voting-started', "Voting has been opened!");}, 1000);
-            }
         }
         else if(activePoll.activity == 'Game') {
             socket.emit("new-game-poll", activePoll);
@@ -110,7 +107,7 @@ homeNamespace.on('connection', socket => {
         if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
         }
-        else if (nominatorTrack.some(nom => nom.includes(data.uid))) {
+        else if (nominatorTrack.some(nom => nom[1] == nameMap[data.uid])) {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else if (nominatorTrack.length == activePoll.maxVotes) {

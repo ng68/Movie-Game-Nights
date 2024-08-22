@@ -386,6 +386,50 @@ function sendRunoffVote() {
     window.location.href = "../index.html";
   }
 }
+//Update Nominations List and Vote Modal
+function populateNoms(nominationsMap) {
+  const nominationList = document.getElementById('nominationList');
+  const voteModalbody = document.getElementById("voteModalbody");
+  const submitVoteBtn = document.getElementById('submitVoteBtn');
+  nominationList.innerHTML = '';
+  voteModalbody.innerHTML = '<br>';
+  for (let i = 0; i < nominationsMap.length; i++) {
+    const nominationName = nominationsMap[i][0];
+    nominationList.innerHTML += 
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
+    voteModalbody.innerHTML +=
+      '<label>' + nominationName + ' </label>' +
+      '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
+      '<br>' +
+      '<br>';
+  }
+  submitVoteBtn.disabled = false;
+}
+//Unlock Vote Modal
+function openVote(msg) {
+  const addNombtn = document.getElementById('AddNominationbtn');
+  const beginVotingBtn = document.getElementById('beginVotingBtn');
+  const voteBtn = document.getElementById('voteBtn');
+  const voteModalbody = document.getElementById("voteModalbody");
+  const user = auth.currentUser;
+  if (user) {
+    checkUser()
+      .then((result) => {
+        /** @type {any} */
+        const data = result.data;
+        if (data.isMember) {
+          voteModalbody.addEventListener('change', checkVoteModal);
+          voteBtn.addEventListener('click', e => {
+            document.getElementById('voteModal').style.display='block';
+          });
+          addNombtn.disabled = true;
+          beginVotingBtn.disabled = true;
+          voteBtn.disabled = false;
+        }
+      });
+  }
+  alert(msg);
+}
 
 //Create New Movie Poll 
 socket.on('new-movie-poll', data => {
@@ -403,14 +447,20 @@ socket.on('new-movie-poll', data => {
   '<div class="w3-center" id="memberBtns">' +
   '</div>';
   const voteModalheader = document.getElementById("voteModalHeader");
-  voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>'
+  voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>';
+  if (data.runoffPoll.length > 0) {
+    populateNoms(data.runoffPoll);
+  }
+  else if (data.nominationsMap.length > 0) {
+    populateNoms(data.nominationsMap)
+  }
   const user = auth.currentUser;
   if (user) {
     checkUser()
     .then((result) => {
       /** @type {any} */
-      const data = result.data;
-      if (data.isMember) {
+      const check = result.data;
+      if (check.isMember) {
         const memberBtns = document.getElementById("memberBtns");
         memberBtns.innerHTML = 
         '<label><b>Movie Name</b></label>' +
@@ -427,14 +477,6 @@ socket.on('new-movie-poll', data => {
         const addNombtn = document.getElementById('AddNominationbtn');
         const beginVotingBtn = document.getElementById('beginVotingBtn'); 
         const submitVoteBtn = document.getElementById("submitVoteBtn");
-        if (data.nominationsMap && data.nominationsMap.length > 0) {
-          const nominationList = document.getElementById('nominationList');
-          for (let i = 0; i < data.nominationsMap.length; i++) {
-            const nominationName = data.nominationsMap[i][0];
-            nominationList.innerHTML += 
-              '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
-          }
-        }
         submitVoteBtn.addEventListener('click', sendVote);
         addNombtn.addEventListener('click', e => {
           if (movieName.value == '') {
@@ -451,7 +493,10 @@ socket.on('new-movie-poll', data => {
         })
         beginVotingBtn.addEventListener('click', e => {
           socket.emit('begin-vote', user.uid);
-        })
+        });
+      }
+      if (data.open) {
+         openVote("Voting has been opened!")
       }
     }); 
   } else {
@@ -479,48 +524,11 @@ socket.on('add-movie-response', data => {
 });
 //Update Movie Nominations List
 socket.on('new-movie-nomination', data => {
-  const nominationList = document.getElementById('nominationList');
-  const voteModalbody = document.getElementById("voteModalbody");
-  const beginVotingBtn = document.getElementById('beginVotingBtn');
-  nominationList.innerHTML = '';
-  voteModalbody.innerHTML = '<br>';
-  for (let i = 0; i < data.nominationsMap.length; i++) {
-    const nominationName = data.nominationsMap[i][0];
-    nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
-    voteModalbody.innerHTML +=
-      '<label>' + nominationName + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
-      '<br>' +
-      '<br>';
-  }
-  beginVotingBtn.disabled = false;
+  populateNoms(data.nominationsMap)
 });
 //Start Movie Polling
 socket.on('voting-started', data => {
-  const addNombtn = document.getElementById('AddNominationbtn');
-  const beginVotingBtn = document.getElementById('beginVotingBtn');
-  const voteBtn = document.getElementById('voteBtn');
-  const voteModalbody = document.getElementById("voteModalbody");
-  const user = auth.currentUser;
-  if (user) {
-    checkUser()
-      .then((result) => {
-        /** @type {any} */
-        const data = result.data;
-        if (data.isMember) {
-          voteModalbody.addEventListener('change', checkVoteModal);
-          voteBtn.addEventListener('click', e => {
-            document.getElementById('voteModal').style.display='block';
-          });
-          addNombtn.disabled = true;
-          beginVotingBtn.disabled = true;
-          voteBtn.disabled = false;
-        }
-      });
-  }
-  
-  alert(data);
+  openVote(data);
 })
 //Create/Begin Game Poll
 socket.on('new-game-poll', data => {
@@ -599,28 +607,16 @@ socket.on('update-count', data => {
 socket.on('runoff-poll', data => {
   const voteCount = document.getElementById("voteCount");
   voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
-  const voteModalbody = document.getElementById("voteModalbody");
   const voteBtn = document.getElementById('voteBtn');
   const submitVoteBtn = document.getElementById("submitVoteBtn");
-  const nominationList = document.getElementById("nominationList");
   submitVoteBtn.disabled = true;
   submitVoteBtn.removeEventListener('click', sendVote);
   submitVoteBtn.addEventListener('click', sendRunoffVote);
-  nominationList.innerHTML = '';
-  voteModalbody.innerHTML = '<br>';
-  for (let i = 0; i < data.runoffPoll.length; i++) {
-    const nominationName = data.runoffPoll[i][0];
-    nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName;
-    voteModalbody.innerHTML +=
-      '<label>' + nominationName + ' </label>' +
-      '<input class="w3-radio" type="radio" name="voteCheck" value=\"' + nominationName + '\">' +
-      '<br>' +
-      '<br>';
-  }
+  populateNoms(data.runoffPoll);
   alert("We have a tie! Runoff Poll has been opened!");
   voteBtn.disabled = false;
 })
+//Poll Results
 socket.on('poll-results', data => {
   const currentPollbody = document.getElementById("currentPollbody");
   const pollResultsbody = document.getElementById("pollResultsbody");
