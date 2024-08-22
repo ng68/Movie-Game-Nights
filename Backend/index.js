@@ -37,7 +37,6 @@ function sortNominations(a, b) {
         return (a[1] > b[1]) ? -1 : 1;
     }
 }
-
 homeNamespace.on('connection', socket => {
     console.log("homepage connected");
     //Send Active Poll to newly connected User
@@ -62,7 +61,7 @@ homeNamespace.on('connection', socket => {
         if (activePoll != null) {
             socket.emit('error', "Active Poll is not null");
         }
-        if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
+        else if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
         }
         else {
@@ -89,7 +88,7 @@ homeNamespace.on('connection', socket => {
         if (activePoll != null) {
             socket.emit('error', "Active Poll is not null");
         }
-        if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
+        else if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
         }
         else {
@@ -114,7 +113,7 @@ homeNamespace.on('connection', socket => {
         if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
         }
-        if (nominatorTrack.some(nom => nom.includes(data.uid))) {
+        else if (nominatorTrack.some(nom => nom.includes(data.uid))) {
             socket.emit('add-movie-response', "ERROR-1");
         }
         else if (nominatorTrack.length == activePoll.maxVotes) {
@@ -248,7 +247,9 @@ homeNamespace.on('connection', socket => {
                 }
                 if (tie.length != 0) {
                     tie.push(topVote[0]);
-                    activePoll.winner = tie[getRandomInt(tie.length)];
+                    const randomWinner = tie[getRandomInt(tie.length)];
+                    activePoll.winner.name = randomWinner;
+                    activePoll.winner.nominator = nominatorTrack.find(win => win.includes(randomWinner)) ?? "";
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
                     setTimeout (() => {activePoll = null;}, 1500);
@@ -256,11 +257,15 @@ homeNamespace.on('connection', socket => {
                 else {
                     activePoll.nominationsMap.sort(sortNominations);
                     activePoll.runoffPoll.sort(sortNominations);
-                    activePoll.winner = topVote[0];
+                    activePoll.winner.name = topVote[0];
+                    activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0])) ?? "";
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
                     setTimeout (() => {activePoll = null;}, 1500);
                 }
+            }
+            else {
+                setTimeout (() => {homeNamespace.emit('update-count', activePoll);}, 500);
             }
         }
     })

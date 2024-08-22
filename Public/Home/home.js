@@ -371,7 +371,7 @@ function sendRunoffVote() {
           uid: user.uid,
           votes: []
         }
-        const voteCheck = document.getElementsByName("runoffCheck");
+        const voteCheck = document.getElementsByName("voteCheck");
         for (let i = 0; i < voteCheck.length; i++) {
           if (voteCheck[i].checked) {
             voteData.votes.push(voteCheck[i].value);
@@ -427,6 +427,14 @@ socket.on('new-movie-poll', data => {
         const addNombtn = document.getElementById('AddNominationbtn');
         const beginVotingBtn = document.getElementById('beginVotingBtn'); 
         const submitVoteBtn = document.getElementById("submitVoteBtn");
+        if (data.nominationsMap.length > 0) {
+          const nominationList = document.getElementById('nominationList');
+          for (let i = 0; i < data.nominationsMap.length; i++) {
+            const nominationName = data.nominationsMap[i][0];
+            nominationList.innerHTML += 
+              '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
+          }
+        }
         submitVoteBtn.addEventListener('click', sendVote);
         addNombtn.addEventListener('click', e => {
           if (movieName.value == '') {
@@ -501,9 +509,7 @@ socket.on('voting-started', data => {
         /** @type {any} */
         const data = result.data;
         if (data.isMember) {
-          voteModalbody.addEventListener('change', e => {
-            checkVoteModal();
-          });
+          voteModalbody.addEventListener('change', checkVoteModal);
           voteBtn.addEventListener('click', e => {
             document.getElementById('voteModal').style.display='block';
           });
@@ -587,30 +593,28 @@ socket.on('vote-response', data => {
 //Update Poll
 socket.on('update-count', data => {
   const voteCount = document.getElementById("voteCount");
-  const nominationList = document.getElementById("nominationList");
   voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
-  nominationList.innerHTML = '';
-  for (let i = 0; i < data.nominationsMap.length; i++) {
-    const nominationName = data.nominationsMap[i][0];
-    const votes = data.nominationsMap[i][1]
-    nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + ' Votes: ' + votes + '</h3>';
-  }
 });
 //Runoff Poll
 socket.on('runoff-poll', data => {
+  const voteCount = document.getElementById("voteCount");
+  voteCount.innerHTML = 'Vote Count: ' + data.totalVotes
   const voteModalbody = document.getElementById("voteModalbody");
   const voteBtn = document.getElementById('voteBtn');
-  const submitVoteBtn = document.getElementById("submitVoteBtn")
+  const submitVoteBtn = document.getElementById("submitVoteBtn");
+  const nominationList = document.getElementById("nominationList");
+  submitVoteBtn.disabled = true;
   submitVoteBtn.removeEventListener('click', sendVote);
   submitVoteBtn.addEventListener('click', sendRunoffVote);
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
   for (let i = 0; i < data.runoffPoll.length; i++) {
     const nominationName = data.runoffPoll[i][0];
+    nominationList.innerHTML += 
+      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName;
     voteModalbody.innerHTML +=
       '<label>' + nominationName + ' </label>' +
-      '<input class="w3-radio" type="radio" name="runoffCheck" value=\"' + nominationName + '\">' +
+      '<input class="w3-radio" type="radio" name="voteCheck" value=\"' + nominationName + '\">' +
       '<br>' +
       '<br>';
   }
@@ -627,7 +631,6 @@ socket.on('poll-results', data => {
         /** @type {any} */
         const data = result.data;
         if (data.isMember) {
-          console.log("Verified as Member")
           currentPollbody.innerHTML = 
             '<div class="w3-bar">' + 
               '<button type="button" class="w3-button w3-theme w3-center w3-blue" onclick="document.getElementById(\'newpoll\').style.display=\'block\'"><i class="fa fa-pencil-square-o"></i>  Create New Poll</button>' +
@@ -659,13 +662,12 @@ socket.on('poll-results', data => {
       const runoffList = document.getElementById("runoffList");
       for (let i = 0; i < data.runoffPoll.length; i++) {
         runoffList.innerHTML += 
-        '<h3 class="w3-center" style="font-size: 16px;">' + data.runoffPoll[i][0] + ': ' + ' Votes: ' + data.runoffPoll[i][1] + '</h3>' +
-        '<br>';
+        '<h3 class="w3-center" style="font-size: 16px;">' + data.runoffPoll[i][0] + ': ' + ' Votes: ' + data.runoffPoll[i][1] + '</h3>';
       }
     }
     pollResultsbody.innerHTML += 
       '<hr>' + 
-      '<h3 class="w3-center" style="font-size: 20px;">Winner: ' + data.winner + '</h3>';
+      '<h3 class="w3-center" style="font-size: 20px;">Winner: ' + data.winner.name + '- ' + data.winner.nominator + '</h3>';
   }
 })
 
