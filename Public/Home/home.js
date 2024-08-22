@@ -427,7 +427,7 @@ socket.on('new-movie-poll', data => {
         const addNombtn = document.getElementById('AddNominationbtn');
         const beginVotingBtn = document.getElementById('beginVotingBtn'); 
         const submitVoteBtn = document.getElementById("submitVoteBtn");
-        if (data.nominationsMap.length > 0) {
+        if (data.nominationsMap && data.nominationsMap.length > 0) {
           const nominationList = document.getElementById('nominationList');
           for (let i = 0; i < data.nominationsMap.length; i++) {
             const nominationName = data.nominationsMap[i][0];
