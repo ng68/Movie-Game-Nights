@@ -390,7 +390,7 @@ function sendRunoffVote() {
 function populateNoms(nominationsMap) {
   const nominationList = document.getElementById('nominationList');
   const voteModalbody = document.getElementById("voteModalbody");
-  const submitVoteBtn = document.getElementById('submitVoteBtn');
+  const beginVotingBtn = document.getElementById('beginVotingBtn'); 
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
   for (let i = 0; i < nominationsMap.length; i++) {
@@ -403,7 +403,7 @@ function populateNoms(nominationsMap) {
       '<br>' +
       '<br>';
   }
-  submitVoteBtn.disabled = false;
+  beginVotingBtn.disabled = false;
 }
 //Unlock Vote Modal
 function openVote(msg) {
@@ -448,12 +448,7 @@ socket.on('new-movie-poll', data => {
   '</div>';
   const voteModalheader = document.getElementById("voteModalHeader");
   voteModalheader.innerHTML = '<h3 class="w3-center" style="font-size: 20px;">Movie Night - ' + getDate(data.date) + '</h3>';
-  if (data.runoffPoll.length > 0) {
-    populateNoms(data.runoffPoll);
-  }
-  else if (data.nominationsMap.length > 0) {
-    populateNoms(data.nominationsMap)
-  }
+  
   const user = auth.currentUser;
   if (user) {
     checkUser()
@@ -494,6 +489,12 @@ socket.on('new-movie-poll', data => {
         beginVotingBtn.addEventListener('click', e => {
           socket.emit('begin-vote', user.uid);
         });
+      }
+      if (data.runoffPoll.length > 0) {
+        populateNoms(data.runoffPoll);
+      }
+      else if (data.nominationsMap.length > 0) {
+        populateNoms(data.nominationsMap)
       }
       if (data.open) {
          openVote("Voting has been opened!")
@@ -663,7 +664,7 @@ socket.on('poll-results', data => {
     }
     pollResultsbody.innerHTML += 
       '<hr>' + 
-      '<h3 class="w3-center" style="font-size: 20px;">Winner: ' + data.winner.name + '- ' + data.winner.nominator + '</h3>';
+      '<h3 class="w3-center" style="font-size: 20px;">Winner: ' + data.winner.name + ' - ' + data.winner.nominator + '</h3>';
   }
 })
 

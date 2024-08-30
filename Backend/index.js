@@ -37,6 +37,12 @@ function sortNominations(a, b) {
         return (a[1] > b[1]) ? -1 : 1;
     }
 }
+function resetTrackers() {
+    activePoll = null; 
+    nominatorTrack = []; 
+    voterTrack = [];
+}
+
 homeNamespace.on('connection', socket => {
     console.log("homepage connected");
     //Send Active Poll to newly connected User
@@ -126,7 +132,7 @@ homeNamespace.on('connection', socket => {
         if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
         }
-        if (activePoll.nominationsMap.size == 0) {
+        else if (activePoll.nominationsMap.size == 0) {
             socket.emit('voting-started', "ERROR-1");
         }
         else {
@@ -138,7 +144,7 @@ homeNamespace.on('connection', socket => {
         if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
         }
-        if (voterTrack.includes(data.uid)) {
+        else if (voterTrack.includes(data.uid)) {
             socket.emit('vote-response', "ERROR-1");
         }
         else {
@@ -179,14 +185,12 @@ homeNamespace.on('connection', socket => {
                         setTimeout (() => {homeNamespace.emit('runoff-poll', activePoll);}, 1000);
                     }
                     else {
-                        nominatorTrack = [];
-                        voterTrack = [];
                         activePoll.winner.name = topVote[0];
                         activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0])) ?? "";
                         activePoll.nominationsMap.sort(sortNominations);
                         storeActivePoll();
                         homeNamespace.emit('poll-results', activePoll);
-                        setTimeout (() => {activePoll = null;}, 1500);
+                        setTimeout (resetTrackers, 1500);
                     }
                 }
                 else {
@@ -195,7 +199,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.top3.push(activePoll.nominations[0][0], activePoll.nominations[1][0], activePoll.nominations[2][0])
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
-                    setTimeout (() => {activePoll = null;}, 1500);
+                    setTimeout (resetTrackers, 1500);
                 }
             }
             else {
@@ -204,11 +208,11 @@ homeNamespace.on('connection', socket => {
         }
     })
     socket.on('runoff-vote', data => {
-        if (voterTrack.includes(data.uid)) {
-            socket.emit('vote-response', "ERROR-1");
-        }
         if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
             socket.emit('error', "User is not authorized");
+        }
+        else if (voterTrack.includes(data.uid)) {
+            socket.emit('vote-response', "ERROR-1");
         }
         else {
             voterTrack.push(data.uid);
@@ -246,7 +250,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.winner.nominator = nominatorTrack.find(win => win.includes(randomWinner)) ?? "";
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
-                    setTimeout (() => {activePoll = null;}, 1500);
+                    setTimeout (resetTrackers, 1500);
                 }
                 else {
                     activePoll.nominationsMap.sort(sortNominations);
@@ -255,7 +259,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0])) ?? "";
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
-                    setTimeout (() => {activePoll = null;}, 1500);
+                    setTimeout (resetTrackers, 1500);
                 }
             }
             else {
