@@ -129,7 +129,7 @@ homeNamespace.on('connection', socket => {
         }
     });
     socket.on('begin-vote', data => {
-        if (!Object.keys(nameMap).some(member => member.includes(data.uid))) {
+        if (!Object.keys(nameMap).some(member => member.includes(data))) {
             socket.emit('error', "User is not authorized");
         }
         else if (activePoll.nominationsMap.size == 0) {
