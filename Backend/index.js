@@ -186,7 +186,7 @@ homeNamespace.on('connection', socket => {
                     }
                     else {
                         activePoll.winner.name = topVote[0];
-                        activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0])) ?? "";
+                        activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0]))[1] ?? "";
                         activePoll.nominationsMap.sort(sortNominations);
                         storeActivePoll();
                         homeNamespace.emit('poll-results', activePoll);
