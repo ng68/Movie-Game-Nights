@@ -247,7 +247,7 @@ homeNamespace.on('connection', socket => {
                     tie.push(topVote[0]);
                     const randomWinner = tie[getRandomInt(tie.length)];
                     activePoll.winner.name = randomWinner;
-                    activePoll.winner.nominator = nominatorTrack.find(win => win.includes(randomWinner)) ?? "";
+                    activePoll.winner.nominator = nominatorTrack.find(win => win.includes(randomWinner))[1] ?? "";
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
                     setTimeout (resetTrackers, 1500);
