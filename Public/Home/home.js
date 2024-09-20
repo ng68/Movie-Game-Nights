@@ -348,7 +348,10 @@ function sendVote() {
             voteData.votes.push(voteCheck[i].value);
           }
         }
+        console.log("Sending Vote...")
         socket.emit('vote', voteData);
+        const submitVoteBtn = document.getElementById("submitVoteBtn");
+        submitVoteBtn.removeEventListener('click', sendVote);
         document.getElementById('voteModal').style.display='none';
       }
     });
@@ -377,7 +380,10 @@ function sendRunoffVote() {
             voteData.votes.push(voteCheck[i].value);
           }
         }
+        console.log("Sending Runoff Vote...")
         socket.emit('runoff-vote', voteData);
+        const submitVoteBtn = document.getElementById("submitVoteBtn");
+        submitVoteBtn.removeEventListener('click', sendRunoffVote);
         document.getElementById('voteModal').style.display='none';
       }
     });
@@ -387,23 +393,37 @@ function sendRunoffVote() {
   }
 }
 //Update Nominations List and Vote Modal
-function populateNoms(nominationsMap) {
+function populateNoms(nominationsMap, runoff) {
   const nominationList = document.getElementById('nominationList');
   const voteModalbody = document.getElementById("voteModalbody");
   const beginVotingBtn = document.getElementById('beginVotingBtn'); 
   nominationList.innerHTML = '';
   voteModalbody.innerHTML = '<br>';
-  for (let i = 0; i < nominationsMap.length; i++) {
-    const nominationName = nominationsMap[i][0];
-    nominationList.innerHTML += 
-      '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
-    voteModalbody.innerHTML +=
-      '<label>' + nominationName + ' </label>' +
-      '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
-      '<br>' +
-      '<br>';
+  if (!runoff) {
+    for (let i = 0; i < nominationsMap.length; i++) {
+      const nominationName = nominationsMap[i][0];
+      nominationList.innerHTML += 
+        '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
+      voteModalbody.innerHTML +=
+        '<label>' + nominationName + ' </label>' +
+        '<input class="w3-check" type="checkbox" name="voteCheck" value=\"' + nominationName + '\">' +
+        '<br>' +
+        '<br>';
+    }
+    beginVotingBtn.disabled = false;
+  } 
+  else if (runoff){
+    for (let i = 0; i < nominationsMap.length; i++) {
+      const nominationName = nominationsMap[i][0];
+      nominationList.innerHTML += 
+        '<h3 class="w3-center" style="font-size: 16px;">' + nominationName + '</h3>';
+      voteModalbody.innerHTML +=
+        '<label>' + nominationName + ' </label>' +
+        '<input class="w3-radio" type="radio" name="voteCheck" value=\"' + nominationName + '\">' +
+        '<br>' +
+        '<br>';
+    }
   }
-  beginVotingBtn.disabled = false;
 }
 //Unlock Vote Modal
 function openVote(msg) {
@@ -491,10 +511,10 @@ socket.on('new-movie-poll', data => {
         });
       }
       if (data.runoffPoll.length > 0) {
-        populateNoms(data.runoffPoll);
+        populateNoms(data.runoffPoll, false);
       }
       else if (data.nominationsMap.length > 0) {
-        populateNoms(data.nominationsMap)
+        populateNoms(data.nominationsMap, false)
       }
       if (data.open) {
          openVote("Voting has been opened!")
@@ -525,7 +545,7 @@ socket.on('add-movie-response', data => {
 });
 //Update Movie Nominations List
 socket.on('new-movie-nomination', data => {
-  populateNoms(data.nominationsMap)
+  populateNoms(data.nominationsMap, false)
 });
 //Start Movie Polling
 socket.on('voting-started', data => {
@@ -611,9 +631,8 @@ socket.on('runoff-poll', data => {
   const voteBtn = document.getElementById('voteBtn');
   const submitVoteBtn = document.getElementById("submitVoteBtn");
   submitVoteBtn.disabled = true;
-  submitVoteBtn.removeEventListener('click', sendVote);
   submitVoteBtn.addEventListener('click', sendRunoffVote);
-  populateNoms(data.runoffPoll);
+  populateNoms(data.runoffPoll, true);
   alert("We have a tie! Runoff Poll has been opened!");
   voteBtn.disabled = false;
 })
