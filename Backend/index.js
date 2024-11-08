@@ -256,7 +256,7 @@ homeNamespace.on('connection', socket => {
                     activePoll.nominationsMap.sort(sortNominations);
                     activePoll.runoffPoll.sort(sortNominations);
                     activePoll.winner.name = topVote[0];
-                    activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0])) ?? "";
+                    activePoll.winner.nominator = nominatorTrack.find(win => win.includes(topVote[0]))[1] ?? "";
                     storeActivePoll();
                     homeNamespace.emit('poll-results', activePoll);
                     setTimeout (resetTrackers, 1500);
