@@ -491,8 +491,6 @@ socket.on('new-movie-poll', data => {
         const movieName = document.getElementById('movieName');
         const addNombtn = document.getElementById('AddNominationbtn');
         const beginVotingBtn = document.getElementById('beginVotingBtn'); 
-        const submitVoteBtn = document.getElementById("submitVoteBtn");
-        submitVoteBtn.addEventListener('click', sendVote);
         addNombtn.addEventListener('click', e => {
           if (movieName.value == '') {
             alert("Please enter a movie name")
@@ -510,11 +508,18 @@ socket.on('new-movie-poll', data => {
           socket.emit('begin-vote', user.uid);
         });
       }
+      const submitVoteBtn = document.getElementById("submitVoteBtn");
       if (data.runoffPoll.length > 0) {
-        populateNoms(data.runoffPoll, false);
+        submitVoteBtn.disabled = true;
+        submitVoteBtn.addEventListener('click', sendRunoffVote);
+        populateNoms(data.runoffPoll, true);
       }
       else if (data.nominationsMap.length > 0) {
+        submitVoteBtn.addEventListener('click', sendVote);
         populateNoms(data.nominationsMap, false)
+      }
+      else {
+        submitVoteBtn.addEventListener('click', sendVote);
       }
       if (data.open) {
          openVote("Voting has been opened!")
